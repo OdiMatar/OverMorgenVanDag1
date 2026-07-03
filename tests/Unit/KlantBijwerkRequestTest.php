@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Requests\KlantBijwerkRequest;
+use Illuminate\Translation\ArrayLoader;
+use Illuminate\Translation\Translator;
+use Illuminate\Validation\Factory;
 
 test('klant bijwerken normaliseert postcode en lege optionele velden', function (): void {
     $request = KlantBijwerkRequest::create('/klanten/1', 'PUT', [
-        'email' => 'nieuw@example.com',
+        'email' => 'nieuw@outlook.com',
         'mobiel' => '+31 6 1234 61 74',
         'straatnaam' => 'Winkel van Sinkelstraat',
         'huisnummer' => '4',
@@ -12,8 +15,8 @@ test('klant bijwerken normaliseert postcode en lege optionele velden', function 
         'woonplaats' => 'Utrecht',
     ]);
 
-    $request->setContainer(app());
-    $validator = validator($request->all(), $request->rules());
+    $validatorFactory = new Factory(new Translator(new ArrayLoader, 'nl'));
+    $validator = $validatorFactory->make($request->all(), $request->rules());
 
     expect($validator->passes())->toBeTrue();
 
@@ -21,7 +24,7 @@ test('klant bijwerken normaliseert postcode en lege optionele velden', function 
 
     expect($request->contactgegevens())
         ->toMatchArray([
-            'email' => 'nieuw@example.com',
+            'email' => 'nieuw@outlook.com',
             'postcode' => '3511KV',
             'toevoeging' => '',
             'bijzonderheden' => '',
