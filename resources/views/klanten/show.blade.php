@@ -59,6 +59,13 @@
         overflow-wrap: anywhere;
     }
 
+    .klant-detail-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .klant-detail-edit,
     .klant-detail-back {
         display: inline-flex;
         min-height: 34px;
@@ -71,6 +78,12 @@
         font-size: 13px;
         font-weight: 800;
         text-decoration: none;
+    }
+
+    .klant-detail-edit {
+        border-color: #d40a2f;
+        background: #d40a2f;
+        color: #fff;
     }
 
     @media (max-width: 620px) {
@@ -95,6 +108,27 @@
         <p>{{ $klant->relatienummer }}</p>
 
         <dl class="klant-detail-list">
+            <dt>Naam</dt>
+            <dd>{{ trim($klant->voornaam . ' ' . ($klant->tussenvoegsel ? $klant->tussenvoegsel . ' ' : '') . $klant->achternaam) }}</dd>
+
+            <dt>Relatienummer</dt>
+            <dd>{{ $klant->relatienummer }}</dd>
+
+            <dt>Account e-mail</dt>
+            <dd>{{ $klant->account_email }}</dd>
+
+            <dt>Contact e-mail</dt>
+            <dd>{{ $klant->email }}</dd>
+
+            <dt>Straatnaam</dt>
+            <dd>{{ $klant->straatnaam }}</dd>
+
+            <dt>Huisnummer</dt>
+            <dd>{{ $klant->huisnummer }}</dd>
+
+            <dt>Toevoeging</dt>
+            <dd>{{ $klant->toevoeging ?: '-' }}</dd>
+
             <dt>Adres</dt>
             <dd>{{ $klant->adres }}</dd>
 
@@ -107,14 +141,14 @@
             <dt>Mobiel</dt>
             <dd>{{ $klant->mobiel }}</dd>
 
-            <dt>Contact e-mail</dt>
-            <dd>{{ $klant->email }}</dd>
-
             <dt>Bijzonderheden</dt>
             <dd>{{ $klant->bijzonderheden ?: 'Geen bijzonderheden bekend.' }}</dd>
         </dl>
 
-        <a class="klant-detail-back" href="{{ route('klanten.index') }}">Terug naar klanten</a>
+        <div class="klant-detail-actions">
+            <a class="klant-detail-edit" href="{{ route('klanten.edit', $klant->klant_id) }}">Wijzigen</a>
+            <a class="klant-detail-back" href="{{ route('klanten.index') }}">Terug</a>
+        </div>
     </section>
 </main>
 
