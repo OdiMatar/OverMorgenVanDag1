@@ -26,6 +26,8 @@ Route::match(['get', 'post'], '/uitloggen', [AuthenticatedSessionController::cla
 Route::middleware('auth')->group(function (): void {
     Route::match(['get', 'post'], '/klanten', [KlantController::class, 'index'])->name('klanten.index')->can('view-owner-pages');
     Route::get('/klanten/{klantId}', [KlantController::class, 'show'])->whereNumber('klantId')->name('klanten.show')->can('view-owner-pages');
+    Route::get('/klanten/{klantId}/wijzigen', [KlantController::class, 'edit'])->whereNumber('klantId')->name('klanten.edit')->can('view-owner-pages');
+    Route::put('/klanten/{klantId}', [KlantController::class, 'update'])->whereNumber('klantId')->name('klanten.update')->can('view-owner-pages');
     Route::view('/medewerkers', 'medewerkers.index')->name('medewerkers.index')->can('view-owner-pages');
     Route::get('/behandelingen', [BehandelingController::class, 'index'])->name('behandelingen.index')->can('view-owner-pages');
     Route::get('/behandelingen/{behandeling}/producten', [BehandelingController::class, 'producten'])->name('behandelingen.producten.index')->can('view-owner-pages');
