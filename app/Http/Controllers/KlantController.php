@@ -2,26 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\KlantZoekRequest;
 use App\Models\Klant;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class KlantController extends Controller
 {
-    public function index(Request $request): View|RedirectResponse
+    public function index(KlantZoekRequest $request): View|RedirectResponse
     {
-        $gevalideerdeGegevens = $request->validate([
-            'postcode' => ['nullable', 'string', 'max:10', 'regex:/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/'],
-        ], [
-            'postcode.regex' => 'Voer een geldige Nederlandse postcode in, bijvoorbeeld 3512AB.',
-            'postcode.max' => 'Een postcode mag maximaal 10 tekens bevatten.',
-        ]);
-
-        $postcode = $this->normaliseerPostcode($gevalideerdeGegevens['postcode'] ?? null);
+        $postcode = $request->postcode();
 
         try {
             $klanten = Klant::zoekMetContactgegevens($postcode);
@@ -44,15 +37,6 @@ class KlantController extends Controller
             'postcode' => $postcode,
             'melding' => $melding,
         ]);
-    }
-
-    private function normaliseerPostcode(?string $postcode): ?string
-    {
-        if ($postcode === null || trim($postcode) === '') {
-            return null;
-        }
-
-        return strtoupper(str_replace(' ', '', trim($postcode)));
     }
 
     private function logTechnischeFout(Throwable $exception, ?string $postcode): void
