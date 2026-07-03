@@ -201,7 +201,9 @@
     </div>
 
     <section class="klanten-filter" aria-label="Klanten filteren">
-        <form class="klanten-filter__form" method="GET" action="{{ route('klanten.index') }}">
+        <form class="klanten-filter__form" method="POST" action="{{ route('klanten.index') }}">
+            @csrf
+
             <label for="postcode">Postcode zoeken</label>
             <div class="klanten-filter__controls">
                 <input
@@ -264,7 +266,9 @@
                             <td>{{ $klant->woonplaats }}</td>
                             <td>{{ $klant->mobiel }}</td>
                             <td>{{ $klant->email }}</td>
-                            <td><span class="klanten-detail">Details</span></td>
+                            <td>
+                                <a class="klanten-detail" href="{{ route('klanten.show', $klant->klant_id) }}">Details</a>
+                            </td>
                         </tr>
                     @empty
                         <tr>
