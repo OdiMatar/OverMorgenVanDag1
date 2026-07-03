@@ -113,6 +113,18 @@
         color: #1f6b4b;
     }
 
+    .klanten-flash-success {
+        box-sizing: border-box;
+        margin: 0 0 18px;
+        padding: 15px 16px;
+        border: 1px solid #a8d8c0;
+        border-radius: 5px;
+        background: #d5eee0;
+        color: #145238;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
     .klanten-overzicht {
         margin-top: 12px;
         padding: 13px 14px 16px;
@@ -190,6 +202,10 @@
 </style>
 
 <main class="page-shell klanten-page">
+    @if (session('succesmelding'))
+        <p class="klanten-flash-success" data-auto-dismiss role="status">{{ session('succesmelding') }}</p>
+    @endif
+
     <nav class="klanten-breadcrumb" aria-label="Kruimelpad">
         <a href="{{ route('home') }}">Home</a>
         <span>/</span>
@@ -282,5 +298,11 @@
         </div>
     </section>
 </main>
+
+<script>
+    window.setTimeout(() => {
+        document.querySelectorAll('[data-auto-dismiss]').forEach((melding) => melding.remove());
+    }, 3000);
+</script>
 
 @include('components.site-footer')
