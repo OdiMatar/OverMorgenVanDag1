@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\KlantZoekRequest;
 use App\Models\Klant;
+use App\Models\TechnicalLog;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -48,11 +48,7 @@ class KlantController extends Controller
 
         // De stored procedure houdt database-logging gelijk aan de technische specificatie.
         try {
-            DB::statement('CALL sp_log_technische_melding(?, ?, ?)', [
-                'Klantenoverzicht',
-                'Klantgegevens ophalen mislukt',
-                json_encode($context, JSON_THROW_ON_ERROR),
-            ]);
+            TechnicalLog::schrijf('Klantenoverzicht', 'Klantgegevens ophalen mislukt', $context);
         } catch (Throwable $logException) {
             Log::warning('Technische database-log kon niet worden opgeslagen.', [
                 'foutmelding' => $logException->getMessage(),
