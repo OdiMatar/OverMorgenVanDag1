@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\KlantController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,7 +22,7 @@ Route::match(['get', 'post'], '/uitloggen', [AuthenticatedSessionController::cla
     ->name('logout');
 
 Route::middleware('auth')->group(function (): void {
-    Route::view('/klanten', 'klanten.index')->name('klanten.index')->can('view-owner-pages');
+    Route::get('/klanten', [KlantController::class, 'index'])->name('klanten.index')->can('view-owner-pages');
     Route::view('/medewerkers', 'medewerkers.index')->name('medewerkers.index')->can('view-owner-pages');
     Route::view('/behandelingen', 'behandelingen.index')->name('behandelingen.index')->can('view-owner-pages');
     Route::view('/producten', 'producten.index')->name('producten.index')->can('view-owner-pages');
