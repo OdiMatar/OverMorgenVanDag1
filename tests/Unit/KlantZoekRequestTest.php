@@ -19,7 +19,7 @@ test('lege postcode blijft null', function (): void {
 });
 
 test('postcode validatieregel en melding zijn aanwezig', function (): void {
-    $request = new KlantZoekRequest();
+    $request = new KlantZoekRequest;
 
     expect($request->rules()['postcode'])
         ->toContain('nullable')
