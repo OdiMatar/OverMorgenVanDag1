@@ -1,6 +1,94 @@
 @include('components.site-navbar')
 
-<main class="page-shell"></main>
+<main class="page-shell behandelingen-page">
+    <nav class="behandelingen-breadcrumb" aria-label="Kruimelpad">
+        <a href="{{ route('home') }}">Home</a>
+        <span>/</span>
+        <span>Behandelingen</span>
+    </nav>
+
+    <h1 class="behandelingen-title">Overzicht behandelingen</h1>
+
+    <section class="behandelingen-filter-card" aria-label="Behandeling filteren">
+        <form class="behandelingen-filter-form" method="GET" action="{{ route('behandelingen.index') }}">
+            <label for="behandeling">Behandeling selecteren</label>
+            <div class="behandelingen-filter-row">
+                <select id="behandeling" name="behandeling">
+                    @foreach ($behandelingOpties as $optie)
+                        <option value="{{ $optie }}" @selected($selectedBehandeling === $optie)>{{ $optie }}</option>
+                    @endforeach
+                </select>
+                <button class="behandelingen-primary-button" type="submit">Maak selectie</button>
+                <a class="behandelingen-reset-button" href="{{ route('behandelingen.index') }}">Reset</a>
+            </div>
+        </form>
+    </section>
+
+    <section class="behandelingen-table-card">
+        <p class="behandelingen-count">
+            Gevonden behandelingen - {{ $behandelingen->total() }} behandeling(en)
+        </p>
+
+        @if ($behandelingen->lastPage() > 1)
+            <nav class="behandelingen-pagination" aria-label="Paginering behandelingen">
+                @if ($behandelingen->onFirstPage())
+                    <span class="behandelingen-page-link is-disabled">&lsaquo;</span>
+                @else
+                    <a class="behandelingen-page-link" href="{{ $behandelingen->previousPageUrl() }}" aria-label="Vorige pagina">&lsaquo;</a>
+                @endif
+
+                @for ($pagina = 1; $pagina <= $behandelingen->lastPage(); $pagina++)
+                    @if ($pagina === $behandelingen->currentPage())
+                        <span class="behandelingen-page-link is-active">{{ $pagina }}</span>
+                    @else
+                        <a class="behandelingen-page-link" href="{{ $behandelingen->url($pagina) }}">{{ $pagina }}</a>
+                    @endif
+                @endfor
+
+                @if ($behandelingen->hasMorePages())
+                    <a class="behandelingen-page-link" href="{{ $behandelingen->nextPageUrl() }}" aria-label="Volgende pagina">&rsaquo;</a>
+                @else
+                    <span class="behandelingen-page-link is-disabled">&rsaquo;</span>
+                @endif
+            </nav>
+        @endif
+
+        <div class="behandelingen-table-wrap">
+            <table class="behandelingen-table">
+                <thead>
+                    <tr>
+                        <th>Soort</th>
+                        <th>Omschrijving</th>
+                        <th>Duur</th>
+                        <th>Prijs</th>
+                        <th>Aantal producten</th>
+                        <th>Actie</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($behandelingen as $behandeling)
+                        <tr>
+                            <td>{{ $behandeling->Naam }}</td>
+                            <td>{{ $behandeling->Omschrijving }}</td>
+                            <td>{{ $behandeling->Duurminuten }} min</td>
+                            <td>EUR {{ number_format((float) $behandeling->Prijs, 2, ',', '.') }}</td>
+                            <td>{{ $behandeling->AantalProducten }}</td>
+                            <td>
+                                <a class="behandelingen-product-button" href="{{ route('behandelingen.producten.index', $behandeling->Id) }}">Producten</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td class="behandelingen-empty-message" colspan="6">
+                                Er zijn geen behandelingen bekend met deze naam
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
 
 @include('components.site-footer')
 
