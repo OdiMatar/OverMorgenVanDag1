@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\BehandelingController;
 use App\Http\Controllers\KlantController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
@@ -26,7 +27,11 @@ Route::middleware('auth')->group(function (): void {
     Route::match(['get', 'post'], '/klanten', [KlantController::class, 'index'])->name('klanten.index')->can('view-owner-pages');
     Route::get('/klanten/{klantId}', [KlantController::class, 'show'])->whereNumber('klantId')->name('klanten.show')->can('view-owner-pages');
     Route::view('/medewerkers', 'medewerkers.index')->name('medewerkers.index')->can('view-owner-pages');
-    Route::view('/behandelingen', 'behandelingen.index')->name('behandelingen.index')->can('view-owner-pages');
+    Route::get('/behandelingen', [BehandelingController::class, 'index'])->name('behandelingen.index')->can('view-owner-pages');
+    Route::get('/behandelingen/{behandeling}/producten', [BehandelingController::class, 'producten'])->name('behandelingen.producten.index')->can('view-owner-pages');
+    Route::get('/behandelingen/{behandeling}/producten/{product}', [BehandelingController::class, 'productDetail'])->name('behandelingen.producten.show')->can('view-owner-pages');
+    Route::get('/behandelingen/{behandeling}/producten/{product}/wijzigen', [BehandelingController::class, 'productWijzigen'])->name('behandelingen.producten.edit')->can('view-owner-pages');
+    Route::put('/behandelingen/{behandeling}/producten/{product}', [BehandelingController::class, 'productOpslaan'])->name('behandelingen.producten.update')->can('view-owner-pages');
     Route::get('/producten', [ProductController::class, 'index'])->name('producten.index')->can('view-owner-pages');
     Route::get('/producten/{id}', [ProductController::class, 'show'])->name('producten.show')->can('view-owner-pages');
     Route::get('/producten/{id}/edit', [ProductController::class, 'edit'])->name('producten.edit')->can('view-owner-pages');
