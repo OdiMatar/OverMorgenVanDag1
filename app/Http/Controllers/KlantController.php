@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\KlantBijwerkRequest;
 use App\Http\Requests\KlantZoekRequest;
 use App\Models\Klant;
 use App\Models\TechnicalLog;
@@ -19,7 +20,9 @@ class KlantController extends Controller
         try {
             $klanten = Klant::zoekMetContactgegevens($postcode);
         } catch (Throwable $exception) {
-            $this->logTechnischeFout($exception, $postcode);
+            $this->logTechnischeFout($exception, 'Klantenoverzicht ophalen', [
+                'postcode' => $postcode,
+            ]);
 
             return back()
                 ->withInput()
@@ -52,7 +55,9 @@ class KlantController extends Controller
         try {
             $klant = Klant::vindMetContactgegevens($klantId);
         } catch (Throwable $exception) {
-            $this->logTechnischeFout($exception, null);
+            $this->logTechnischeFout($exception, 'Klantdetails ophalen', [
+                'klant_id' => $klantId,
+            ]);
 
             return redirect()
                 ->route('klanten.index')
@@ -78,16 +83,95 @@ class KlantController extends Controller
         ]);
     }
 
-    private function logTechnischeFout(Throwable $exception, ?string $postcode): void
+    public function edit(int $klantId): View|RedirectResponse
     {
-        $context = [
-            'postcode' => $postcode,
+        try {
+            $klant = Klant::vindMetContactgegevens($klantId);
+        } catch (Throwable $exception) {
+            $this->logTechnischeFout($exception, 'Klant wijzigen openen', ['klant_id' => $klantId]);
+
+            return redirect()
+                ->route('klanten.index')
+                ->with('melding', 'De klantgegevens konden niet worden opgehaald. Probeer het later opnieuw.');
+        }
+
+        if ($klant === null) {
+            Log::channel('klanten')->warning('Klant wijzigen niet gevonden.', [
+                'klant_id' => $klantId,
+            ]);
+
+            return redirect()
+                ->route('klanten.index')
+                ->with('melding', 'De gekozen klant is niet gevonden.');
+        }
+
+        return view('klanten.edit', [
+            'klant' => $klant,
+        ]);
+    }
+
+    public function update(KlantBijwerkRequest $request, int $klantId): RedirectResponse
+    {
+        $contactgegevens = $request->contactgegevens();
+
+        try {
+            if (Klant::contactEmailBestaat($contactgegevens['email'], $klantId)) {
+                Log::channel('klanten')->warning('Klantgegevens zijn niet bijgewerkt: e-mail bestaat al.', [
+                    'klant_id' => $klantId,
+                    'email' => $contactgegevens['email'],
+                ]);
+
+                return back()
+                    ->withInput()
+                    ->withErrors(['email' => 'Het e-mailadres is al in gebruik'])
+                    ->with('foutmelding', 'Klantgegevens zijn niet bijgewerkt');
+            }
+
+            $aantalGewijzigd = Klant::werkContactgegevensBij($klantId, $contactgegevens);
+        } catch (Throwable $exception) {
+            $this->logTechnischeFout($exception, 'Klant wijzigen opslaan', [
+                'klant_id' => $klantId,
+                'email' => $contactgegevens['email'],
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('foutmelding', 'Klantgegevens zijn niet bijgewerkt');
+        }
+
+        if ($aantalGewijzigd === 0) {
+            Log::channel('klanten')->info('Klantgegevens ongewijzigd opgeslagen.', [
+                'klant_id' => $klantId,
+            ]);
+
+            return back()
+                ->withInput()
+                ->with('foutmelding', 'Klantgegevens zijn niet bijgewerkt');
+        }
+
+        Log::channel('klanten')->info('Klantgegevens bijgewerkt.', [
+            'klant_id' => $klantId,
+            'email' => $contactgegevens['email'],
+        ]);
+
+        return redirect()
+            ->route('klanten.index')
+            ->with('succesmelding', 'Klantgegevens bijgewerkt');
+    }
+
+    /**
+     * @param  array<string, mixed>  $extraContext
+     */
+    private function logTechnischeFout(Throwable $exception, string $actie, array $extraContext = []): void
+    {
+        $context = array_merge([
+            'actie' => $actie,
             'foutmelding' => $exception->getMessage(),
-        ];
+        ], $extraContext);
 
         // De stored procedure houdt database-logging gelijk aan de technische specificatie.
         try {
-            TechnicalLog::schrijf('Klantenoverzicht', 'Klantgegevens ophalen mislukt', $context);
+            TechnicalLog::schrijf('Klanten', $actie.' mislukt', $context);
         } catch (Throwable $logException) {
             Log::warning('Technische database-log kon niet worden opgeslagen.', [
                 'foutmelding' => $logException->getMessage(),
