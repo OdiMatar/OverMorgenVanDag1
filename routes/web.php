@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -24,5 +25,8 @@ Route::middleware('auth')->group(function (): void {
     Route::view('/klanten', 'klanten.index')->name('klanten.index')->can('view-owner-pages');
     Route::view('/medewerkers', 'medewerkers.index')->name('medewerkers.index')->can('view-owner-pages');
     Route::view('/behandelingen', 'behandelingen.index')->name('behandelingen.index')->can('view-owner-pages');
-    Route::view('/producten', 'producten.index')->name('producten.index')->can('view-owner-pages');
+    Route::get('/producten', [ProductController::class, 'index'])->name('producten.index')->can('view-owner-pages');
+    Route::get('/producten/{id}', [ProductController::class, 'show'])->name('producten.show')->can('view-owner-pages');
+    Route::get('/producten/{id}/edit', [ProductController::class, 'edit'])->name('producten.edit')->can('view-owner-pages');
+    Route::put('/producten/{id}', [ProductController::class, 'update'])->name('producten.update')->can('view-owner-pages');
 });
