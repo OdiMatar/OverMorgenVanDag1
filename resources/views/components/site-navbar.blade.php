@@ -61,6 +61,12 @@
         cursor: pointer;
     }
 
+    .site-navbar__links a.is-active {
+        padding: 11px 9px;
+        border-radius: 7px;
+        background: #9f3155;
+    }
+
     .site-navbar__user {
         font-size: 12px;
         font-weight: 400;
@@ -101,10 +107,14 @@
         <nav class="site-navbar__links" aria-label="Hoofdnavigatie">
             @auth
                 @if (auth()->user()->isEigenaar())
-                    <a href="{{ route('klanten.index') }}">Klanten</a>
+                    <a href="#">Accounts</a>
                     <a href="{{ route('medewerkers.index') }}">Medewerkers</a>
+                    <a href="#">Beschikbaarheid</a>
+                    <a href="{{ route('klanten.index') }}">Klanten</a>
+                    <a href="#">Afspraken</a>
                     <a href="{{ route('behandelingen.index') }}">Behandelingen</a>
-                    <a href="{{ route('producten.index') }}">Producten</a>
+                    <a class="{{ request()->is('producten*') ? 'is-active' : '' }}" href="{{ route('producten.index') }}">Producten</a>
+                    <a href="#">Bestellingen</a>
                 @endif
 
                 <span class="site-navbar__user">{{ auth()->user()->name }} ({{ auth()->user()->role }})</span>
