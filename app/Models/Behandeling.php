@@ -3,7 +3,146 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Behandeling extends Model
 {
+    protected $table = 'Behandeling';
+
+    protected $primaryKey = 'Id';
+
+    public $timestamps = false;
+
+    public static function opties(): Collection
+    {
+        return DB::table('Behandeling')
+            ->where('IsActief', 1)
+            ->orderBy('Id')
+            ->pluck('Naam')
+            ->prepend('Alle behandelingen')
+            ->push('Overig')
+            ->values();
+    }
+
+    public static function overzicht(?string $naam = null): LengthAwarePaginator
+    {
+        $query = DB::table('Behandeling')
+            ->select([
+                'Behandeling.Id',
+                'Behandeling.Naam',
+                'Behandeling.Omschrijving',
+                'Behandeling.Duurminuten',
+                'Behandeling.Prijs',
+                DB::raw('COUNT(DISTINCT Product.Id) as AantalProducten'),
+            ])
+            ->leftJoin('BehandelingPerVoorraad', function ($join): void {
+                $join->on('BehandelingPerVoorraad.BehandelingId', '=', 'Behandeling.Id')
+                    ->where('BehandelingPerVoorraad.IsActief', 1);
+            })
+            ->leftJoin('Voorraad', function ($join): void {
+                $join->on('Voorraad.Id', '=', 'BehandelingPerVoorraad.VoorraadId')
+                    ->where('Voorraad.IsActief', 1);
+            })
+            ->leftJoin('Product', function ($join): void {
+                $join->on('Product.Id', '=', 'Voorraad.ProductId')
+                    ->where('Product.IsActief', 1);
+            })
+            ->leftJoin('MedewerkerPerBehandeling', function ($join): void {
+                $join->on('MedewerkerPerBehandeling.BehandelingId', '=', 'Behandeling.Id')
+                    ->where('MedewerkerPerBehandeling.IsActief', 1);
+            })
+            ->where('Behandeling.IsActief', 1)
+            ->groupBy([
+                'Behandeling.Id',
+                'Behandeling.Naam',
+                'Behandeling.Omschrijving',
+                'Behandeling.Duurminuten',
+                'Behandeling.Prijs',
+            ])
+            ->orderBy('Behandeling.Naam');
+
+        if ($naam !== null && $naam !== '' && $naam !== 'Alle behandelingen') {
+            $query->where('Behandeling.Naam', $naam);
+        }
+
+        return $query->paginate(4)->withQueryString();
+    }
+
+    public static function detail(int $id): object
+    {
+        return DB::table('Behandeling')
+            ->where('Id', $id)
+            ->where('IsActief', 1)
+            ->firstOrFail();
+    }
+
+    public static function producten(int $behandelingId): Collection
+    {
+        return DB::table('BehandelingPerVoorraad')
+            ->join('Voorraad', 'Voorraad.Id', '=', 'BehandelingPerVoorraad.VoorraadId')
+            ->join('Product', 'Product.Id', '=', 'Voorraad.ProductId')
+            ->where('BehandelingPerVoorraad.BehandelingId', $behandelingId)
+            ->where('BehandelingPerVoorraad.IsActief', 1)
+            ->where('Voorraad.IsActief', 1)
+            ->where('Product.IsActief', 1)
+            ->orderBy('Product.Id')
+            ->select([
+                'Product.Id',
+                'Product.Naam',
+                'Product.Merk',
+                'Product.Omschrijving',
+                'Product.EANcode',
+                'Product.VerkoopPrijs',
+                'Voorraad.AantalOpVoorraad',
+            ])
+            ->get();
+    }
+
+    public static function productDetail(int $behandelingId, int $productId): object
+    {
+        return DB::table('BehandelingPerVoorraad')
+            ->join('Voorraad', 'Voorraad.Id', '=', 'BehandelingPerVoorraad.VoorraadId')
+            ->join('Product', 'Product.Id', '=', 'Voorraad.ProductId')
+            ->leftJoin('LeverancierOrder', function ($join): void {
+                $join->on('LeverancierOrder.ProductId', '=', 'Product.Id')
+                    ->where('LeverancierOrder.IsActief', 1);
+            })
+            ->leftJoin('Leverancier', function ($join): void {
+                $join->on('Leverancier.Id', '=', 'LeverancierOrder.LeverancierId')
+                    ->where('Leverancier.IsActief', 1);
+            })
+            ->where('BehandelingPerVoorraad.BehandelingId', $behandelingId)
+            ->where('Product.Id', $productId)
+            ->where('BehandelingPerVoorraad.IsActief', 1)
+            ->where('Voorraad.IsActief', 1)
+            ->where('Product.IsActief', 1)
+            ->orderByDesc('LeverancierOrder.Id')
+            ->select([
+                'Product.Id',
+                'Product.Naam',
+                'Product.Merk',
+                'Product.Omschrijving',
+                'Product.EANcode',
+                'Product.Houdbaarheidsdatum',
+                'Product.InkoopPrijs',
+                'Product.VerkoopPrijs',
+                'Product.Opmerking',
+                'Voorraad.AantalOpVoorraad',
+                'Leverancier.Naam as LeverancierNaam',
+                'Leverancier.Postcode as LeverancierPostcode',
+                'Leverancier.Plaats as LeverancierPlaats',
+                'Leverancier.Email as LeverancierEmail',
+                'Leverancier.Mobiel as LeverancierMobiel',
+            ])
+            ->firstOrFail();
+    }
+
+    public static function wijzigProductPrijs(int $productId, float $verkoopprijs): void
+    {
+        DB::table('Product')
+            ->where('Id', $productId)
+            ->update(['VerkoopPrijs' => round($verkoopprijs, 2)]);
+    }
 }

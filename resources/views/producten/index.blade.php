@@ -1,71 +1,207 @@
 @include('components.site-navbar')
 
-@php
-    $geld = fn ($waarde) => $waarde === null ? '-' : 'EUR '.number_format((float) $waarde, 2, ',', '.');
-@endphp
-
 <style>
-    .product-page { max-width: 1180px; margin: 44px auto 0; padding: 0 24px; }
-    .product-breadcrumb { margin-bottom: 22px; color: #7b8492; font-weight: 700; }
-    .product-breadcrumb a { color: #c9002b; text-decoration: none; }
-    .product-title { margin: 0 0 12px; color: #c9002b; font-size: 22px; }
-    .product-card { border-radius: 12px; background: #fff; box-shadow: 0 18px 35px rgb(25 30 40 / 0.08); }
-    .product-filter { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: end; min-height: 78px; padding: 14px; }
-    .product-filter__field { max-width: 280px; margin-left: auto; }
-    .product-label { display: block; margin-bottom: 6px; color: #27313c; font-size: 12px; font-weight: 800; }
-    .product-select, .product-input { width: 100%; min-height: 34px; padding: 7px 10px; border: 1px solid #cfd6df; border-radius: 7px; background: #fff; color: #384454; font: inherit; }
-    .product-btn { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; padding: 0 20px; border: 0; border-radius: 7px; font-weight: 800; text-decoration: none; cursor: pointer; }
-    .product-btn--red { background: #c9002b; color: #fff; }
-    .product-btn--grey { background: #7d8a99; color: #fff; }
-    .product-btn--outline { border: 1px solid #1f7bd5; background: #fff; color: #1f7bd5; }
-    .product-table-wrap { margin-top: 16px; overflow: hidden; }
-    .product-table-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px; color: #7b8492; font-size: 13px; }
-    .product-pagination { display: flex; gap: 7px; justify-content: center; flex: 1; }
-    .product-pagination a, .product-pagination span { display: inline-flex; width: 31px; height: 31px; align-items: center; justify-content: center; border: 1px solid #e1e6ed; border-radius: 7px; color: #c9002b; font-weight: 700; text-decoration: none; }
-    .product-pagination .is-active { border-color: #c9002b; background: #c9002b; color: #fff; }
-    .product-pagination .is-disabled { color: #cbd2dc; }
-    .product-table { width: calc(100% - 20px); margin: 0 10px 10px; border-collapse: collapse; }
-    .product-table th { padding: 12px; background: #c9002b; color: #fff; text-align: left; }
-    .product-table td { padding: 10px 12px; border-bottom: 1px solid #e4e8ee; color: #384454; }
-    .product-empty { padding: 26px; text-align: center; color: #384454; }
-    @media (max-width: 760px) { .product-filter { grid-template-columns: 1fr; } .product-filter__field { max-width: none; margin-left: 0; } .product-table { min-width: 760px; } }
+    .producten-page {
+        max-width: 1120px;
+        margin: 44px auto 0;
+        padding: 0 24px;
+    }
+
+    .producten-breadcrumb {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 22px;
+        color: #7b8492;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .producten-breadcrumb a {
+        color: #c9002b;
+        text-decoration: none;
+    }
+
+    .producten-title {
+        margin: 0 0 14px;
+        color: #c9002b;
+        font-size: 22px;
+    }
+
+    .producten-filter-card,
+    .producten-card {
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 18px 35px rgb(25 30 40 / 0.08);
+    }
+
+    .producten-filter-card {
+        margin-bottom: 12px;
+        padding: 14px;
+    }
+
+    .producten-filter-form {
+        display: grid;
+        grid-template-columns: minmax(180px, 280px) auto auto;
+        gap: 8px;
+        align-items: end;
+        margin-left: auto;
+        width: fit-content;
+    }
+
+    .producten-filter-form label {
+        display: grid;
+        gap: 6px;
+        color: #202b3f;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .producten-filter-form select {
+        min-height: 34px;
+        padding: 0 9px;
+        border: 1px solid #d6dde6;
+        border-radius: 7px;
+        background: #fff;
+    }
+
+    .producten-btn {
+        display: inline-flex;
+        min-height: 34px;
+        align-items: center;
+        justify-content: center;
+        padding: 0 14px;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .producten-btn--red {
+        border: 1px solid #c9002b;
+        background: #c9002b;
+        color: #fff;
+    }
+
+    .producten-btn--gray {
+        border: 1px solid #737f8d;
+        background: #737f8d;
+        color: #fff;
+    }
+
+    .producten-btn--outline {
+        border: 1px solid #1f7bd5;
+        background: #fff;
+        color: #1f7bd5;
+    }
+
+    .producten-card {
+        overflow: hidden;
+        padding: 10px;
+    }
+
+    .producten-count {
+        margin: 0 0 12px 4px;
+        color: #8692a5;
+        font-size: 13px;
+    }
+
+    .producten-table-wrap {
+        overflow-x: auto;
+    }
+
+    .producten-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .producten-table th,
+    .producten-table td {
+        padding: 10px 9px;
+        border-bottom: 1px solid #e5e9ef;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .producten-table thead {
+        background: #c9002b;
+        color: #fff;
+    }
+
+    .producten-pagination {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin: 14px 0 6px;
+    }
+
+    .producten-pagination a,
+    .producten-pagination span {
+        display: inline-grid;
+        min-width: 30px;
+        height: 30px;
+        place-items: center;
+        border: 1px solid #dde5ef;
+        border-radius: 7px;
+        color: #c9002b;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .producten-pagination .is-active {
+        border-color: #c9002b;
+        background: #c9002b;
+        color: #fff;
+    }
+
+    @media (max-width: 760px) {
+        .producten-filter-form {
+            width: 100%;
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
-<main class="product-page">
-    <div class="product-breadcrumb">
+<main class="producten-page">
+    <nav class="producten-breadcrumb" aria-label="Kruimelpad">
         <a href="{{ route('home') }}">Home</a>
         <span>/</span>
         <span>Producten</span>
-    </div>
+    </nav>
 
-    <h1 class="product-title">Overzicht producten</h1>
+    <h1 class="producten-title">Overzicht producten</h1>
 
-    <form class="product-card product-filter" method="GET" action="{{ route('producten.index') }}">
-        <div class="product-filter__field">
-            <label class="product-label" for="categorie_id">Categorie selecteren</label>
-            <select class="product-select" id="categorie_id" name="categorie_id">
-                <option value="">Alle categorieen</option>
-                @foreach ($categorieen as $categorie)
-                    <option value="{{ $categorie->Id }}" @selected($geselecteerdeCategorie === (int) $categorie->Id)>
-                        {{ $categorie->Naam }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+    <section class="producten-filter-card" aria-label="Producten filteren">
+        <form class="producten-filter-form" method="GET" action="{{ route('producten.index') }}">
+            <label for="categorie_id">
+                Categorie selecteren
+                <select id="categorie_id" name="categorie_id">
+                    <option value="">Alle categorieen</option>
+                    @foreach ($categorieen as $categorie)
+                        <option value="{{ $categorie->Id }}" @selected((int) $geselecteerdeCategorie === (int) $categorie->Id)>
+                            {{ $categorie->Naam }}
+                        </option>
+                    @endforeach
+                </select>
+            </label>
 
-        <button class="product-btn product-btn--red" type="submit">Maak selectie</button>
-        <a class="product-btn product-btn--grey" href="{{ route('producten.index') }}">Reset</a>
-    </form>
+            <button class="producten-btn producten-btn--red" type="submit">Maak selectie</button>
+            <a class="producten-btn producten-btn--gray" href="{{ route('producten.index') }}">Reset</a>
+        </form>
+    </section>
 
-    <section class="product-card product-table-wrap">
-        <div class="product-table-head">
-            <span>Gevonden producten - {{ $producten->total() }} product(en)</span>
+    <section class="producten-card">
+        <p class="producten-count">Gevonden producten - {{ $producten->total() }} product(en)</p>
 
-            <nav class="product-pagination" aria-label="Product paginering">
+        @if ($producten->hasPages())
+            <div class="producten-pagination">
                 @if ($producten->onFirstPage())
-                    <span class="is-disabled">&lsaquo;</span>
+                    <span>&lsaquo;</span>
                 @else
-                    <a href="{{ $producten->previousPageUrl() }}">&lsaquo;</a>
+                    <a href="{{ $producten->previousPageUrl() }}" aria-label="Vorige pagina">&lsaquo;</a>
                 @endif
 
                 @for ($pagina = 1; $pagina <= $producten->lastPage(); $pagina++)
@@ -77,23 +213,23 @@
                 @endfor
 
                 @if ($producten->hasMorePages())
-                    <a href="{{ $producten->nextPageUrl() }}">&rsaquo;</a>
+                    <a href="{{ $producten->nextPageUrl() }}" aria-label="Volgende pagina">&rsaquo;</a>
                 @else
-                    <span class="is-disabled">&rsaquo;</span>
+                    <span>&rsaquo;</span>
                 @endif
-            </nav>
-        </div>
+            </div>
+        @endif
 
-        <div style="overflow-x: auto;">
-            <table class="product-table">
+        <div class="producten-table-wrap">
+            <table class="producten-table">
                 <thead>
                     <tr>
                         <th>Product</th>
-                        <th>Categorie</th>
                         <th>Merk</th>
+                        <th>Categorie</th>
                         <th>EAN-code</th>
+                        <th>Aantal op voorraad</th>
                         <th>Verkoopprijs</th>
-                        <th>Voorraad</th>
                         <th>Actie</th>
                     </tr>
                 </thead>
@@ -101,16 +237,18 @@
                     @forelse ($producten as $product)
                         <tr>
                             <td>{{ $product->Naam }}</td>
-                            <td>{{ $product->CategorieNaam }}</td>
                             <td>{{ $product->Merk }}</td>
+                            <td>{{ $product->CategorieNaam }}</td>
                             <td>{{ $product->EANcode }}</td>
-                            <td>{{ $geld($product->VerkoopPrijs) }}</td>
-                            <td>{{ $product->AantalOpVoorraad ?? '-' }}</td>
-                            <td><a class="product-btn product-btn--outline" href="{{ route('producten.show', $product->Id) }}">Details</a></td>
+                            <td>{{ $product->AantalOpVoorraad ?? 0 }}</td>
+                            <td>EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}</td>
+                            <td>
+                                <a class="producten-btn producten-btn--outline" href="{{ route('producten.show', $product->Id) }}">Details</a>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td class="product-empty" colspan="7">Er zijn geen producten bekend binnen de geselecteerde categorie</td>
+                            <td colspan="7">Er zijn geen producten gevonden</td>
                         </tr>
                     @endforelse
                 </tbody>

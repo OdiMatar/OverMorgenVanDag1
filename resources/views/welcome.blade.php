@@ -72,7 +72,7 @@
                     Welkom bij Kniploket Tiko - hier regel je eenvoudig klanten, medewerkers, behandelingen en producten voor de salon.
                 </p>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;">
                     @foreach ([
                         ['titel' => 'Klanten', 'tekst' => 'Bekijk klantgegevens en contactinformatie.', 'route' => 'klanten.index'],
                         ['titel' => 'Medewerkers', 'tekst' => 'Overzicht van medewerkers en hun basisgegevens.', 'route' => 'medewerkers.index'],

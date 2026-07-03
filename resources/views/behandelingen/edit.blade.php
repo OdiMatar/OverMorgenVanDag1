@@ -3,4 +3,3 @@
 <main class="page-shell"></main>
 
 @include('components.site-footer')
-
