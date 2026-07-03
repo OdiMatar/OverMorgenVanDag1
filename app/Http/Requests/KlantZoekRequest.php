@@ -34,7 +34,7 @@ class KlantZoekRequest extends FormRequest
 
     public function postcode(): ?string
     {
-        $postcode = $this->validated('postcode');
+        $postcode = $this->input('postcode');
 
         if (! is_string($postcode) || trim($postcode) === '') {
             return null;
