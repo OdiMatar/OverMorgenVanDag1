@@ -105,6 +105,10 @@ class KlantController extends Controller
                 ->with('melding', 'De gekozen klant is niet gevonden.');
         }
 
+        Log::channel('klanten')->info('Klant wijzigen geopend.', [
+            'klant_id' => $klantId,
+        ]);
+
         return view('klanten.edit', [
             'klant' => $klant,
         ]);
