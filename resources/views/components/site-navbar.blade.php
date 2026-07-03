@@ -73,6 +73,12 @@
         cursor: pointer;
     }
 
+    .site-navbar__links a.is-active {
+        padding: 11px 9px;
+        border-radius: 7px;
+        background: #9f3155;
+    }
+
     .site-navbar__user {
         margin: 0 9px 0 18px;
         font-size: 12px;
@@ -514,12 +520,12 @@
             @auth
                 @if (auth()->user()->isEigenaar())
                     <a href="#">Accounts</a>
-                    <a href="{{ route('medewerkers.index') }}" @class(['is-active' => request()->routeIs('medewerkers.*')])>Medewerkers</a>
+                    <a href="{{ route('medewerkers.index') }}">Medewerkers</a>
                     <a href="#">Beschikbaarheid</a>
-                    <a href="{{ route('klanten.index') }}" @class(['is-active' => request()->routeIs('klanten.*')])>Klanten</a>
+                    <a href="{{ route('klanten.index') }}">Klanten</a>
                     <a href="#">Afspraken</a>
-                    <a href="{{ route('behandelingen.index') }}" @class(['is-active' => request()->routeIs('behandelingen.*')])>Behandelingen</a>
-                    <a href="{{ route('producten.index') }}" @class(['is-active' => request()->routeIs('producten.*')])>Producten</a>
+                    <a href="{{ route('behandelingen.index') }}">Behandelingen</a>
+                    <a class="{{ request()->is('producten*') ? 'is-active' : '' }}" href="{{ route('producten.index') }}">Producten</a>
                     <a href="#">Bestellingen</a>
                 @endif
 

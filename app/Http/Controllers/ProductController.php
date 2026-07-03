@@ -2,148 +2,79 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Contracts\View\View;
+use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class ProductController extends Controller
 {
-    public function perBehandeling(int $behandeling): View
+    public function index(Request $request): View
     {
-        $behandelingRecord = $this->findBehandeling($behandeling);
-
-        $producten = DB::table('BehandelingPerVoorraad')
-            ->join('Voorraad', 'Voorraad.Id', '=', 'BehandelingPerVoorraad.VoorraadId')
-            ->join('Product', 'Product.Id', '=', 'Voorraad.ProductId')
-            ->where('BehandelingPerVoorraad.BehandelingId', $behandeling)
-            ->where('BehandelingPerVoorraad.IsActief', 1)
-            ->where('Voorraad.IsActief', 1)
-            ->where('Product.IsActief', 1)
-            ->orderBy('Product.Id')
-            ->select([
-                'Product.Id',
-                'Product.Naam',
-                'Product.Merk',
-                'Product.Omschrijving',
-                'Product.EANcode',
-                'Product.VerkoopPrijs',
-                'Voorraad.AantalOpVoorraad',
-            ])
-            ->get();
+        $categorieId = $request->integer('categorie_id') ?: null;
 
         return view('producten.index', [
-            'behandeling' => $behandelingRecord,
-            'producten' => $producten,
+            'producten' => Product::overzicht($categorieId),
+            'categorieen' => Product::categorieen(),
+            'geselecteerdeCategorie' => $categorieId,
         ]);
     }
 
-    public function showPerBehandeling(int $behandeling, int $product): View
+    public function show($id): View
     {
         return view('producten.show', [
-            'behandeling' => $this->findBehandeling($behandeling),
-            'product' => $this->findProductForBehandeling($behandeling, $product),
+            'product' => $this->productOfFail((int) $id),
         ]);
     }
 
-    public function editPerBehandeling(int $behandeling, int $product): View
+    public function edit($id): View
     {
         return view('producten.edit', [
-            'behandeling' => $this->findBehandeling($behandeling),
-            'product' => $this->findProductForBehandeling($behandeling, $product),
+            'product' => $this->productOfFail((int) $id),
         ]);
     }
 
-    public function updatePerBehandeling(Request $request, int $behandeling, int $product): RedirectResponse
+    public function update(Request $request, $id): RedirectResponse
     {
-        $productRecord = $this->findProductForBehandeling($behandeling, $product);
-        $nieuweVerkoopprijs = $this->decimalFromInput((string) $request->input('nieuwe_verkoopprijs', ''));
-        $minimaleVerkoopprijs = round((float) $productRecord->InkoopPrijs * 1.3, 2);
+        $product = Product::findOrFail((int) $id);
+        $huidigeDatum = Carbon::parse($product->Houdbaarheidsdatum)->startOfDay();
+        $nieuweDatumWaarde = $request->input('houdbaarheidsdatum');
 
-        $validator = Validator::make(
-            ['nieuwe_verkoopprijs' => $nieuweVerkoopprijs],
-            ['nieuwe_verkoopprijs' => ['required', 'numeric']],
-            [
-                'nieuwe_verkoopprijs.required' => 'Verkoopprijs moet minimaal 30 procent boven de inkoopprijs liggen.',
-                'nieuwe_verkoopprijs.numeric' => 'Verkoopprijs moet minimaal 30 procent boven de inkoopprijs liggen.',
-            ],
-        );
-
-        $validator->after(function ($validator) use ($nieuweVerkoopprijs, $minimaleVerkoopprijs): void {
-            if (is_numeric($nieuweVerkoopprijs) && (float) $nieuweVerkoopprijs < $minimaleVerkoopprijs) {
-                $validator->errors()->add('nieuwe_verkoopprijs', 'Verkoopprijs moet minimaal 30 procent boven de inkoopprijs liggen.');
-            }
-        });
-
-        if ($validator->fails()) {
-            return redirect()
-                ->route('behandelingen.producten.edit', [$behandeling, $product])
-                ->withErrors($validator)
+        if (! $nieuweDatumWaarde) {
+            return back()
                 ->withInput()
-                ->with('status_error', 'Gegevens niet bijgewerkt');
+                ->with('error', 'Gegevens niet bijgewerkt')
+                ->withErrors(['houdbaarheidsdatum' => 'De nieuwe houdbaarheidsdatum is verplicht.']);
         }
 
-        DB::table('Product')
-            ->where('Id', $product)
-            ->update(['VerkoopPrijs' => round((float) $nieuweVerkoopprijs, 2)]);
+        $nieuweDatum = Carbon::parse($nieuweDatumWaarde)->startOfDay();
+
+        if ($nieuweDatum->lt($huidigeDatum)) {
+            return back()
+                ->withInput()
+                ->with('error', 'Gegevens niet bijgewerkt')
+                ->withErrors(['houdbaarheidsdatum' => 'De houdbaarheidsdatum mag niet eerder zijn dan de huidige houdbaarheidsdatum.']);
+        }
+
+        if ($nieuweDatum->gt($huidigeDatum->copy()->addDays(7))) {
+            return back()
+                ->withInput()
+                ->with('error', 'Gegevens niet bijgewerkt')
+                ->withErrors(['houdbaarheidsdatum' => 'De houdbaarheidsdatum is met meer dan 7 dagen verlengd.']);
+        }
+
+        Product::wijzigHoudbaarheidsdatum($product->Id, $nieuweDatum->format('Y-m-d'));
 
         return redirect()
-            ->route('behandelingen.producten.show', [$behandeling, $product])
-            ->with('status_success', 'Productprijs bijgewerkt.');
+            ->route('producten.show', $product->Id)
+            ->with('status', 'Houdbaarheidsdatum bijgewerkt.');
     }
 
-    private function findBehandeling(int $behandeling): object
+    private function productOfFail(int $id): object
     {
-        return DB::table('Behandeling')
-            ->where('Id', $behandeling)
-            ->where('IsActief', 1)
-            ->firstOrFail();
-    }
+        abort_unless($product = Product::detail($id), 404);
 
-    private function findProductForBehandeling(int $behandeling, int $product): object
-    {
-        return DB::table('BehandelingPerVoorraad')
-            ->join('Voorraad', 'Voorraad.Id', '=', 'BehandelingPerVoorraad.VoorraadId')
-            ->join('Product', 'Product.Id', '=', 'Voorraad.ProductId')
-            ->leftJoin('LeverancierOrder', function ($join): void {
-                $join->on('LeverancierOrder.ProductId', '=', 'Product.Id')
-                    ->where('LeverancierOrder.IsActief', 1);
-            })
-            ->leftJoin('Leverancier', function ($join): void {
-                $join->on('Leverancier.Id', '=', 'LeverancierOrder.LeverancierId')
-                    ->where('Leverancier.IsActief', 1);
-            })
-            ->where('BehandelingPerVoorraad.BehandelingId', $behandeling)
-            ->where('Product.Id', $product)
-            ->where('BehandelingPerVoorraad.IsActief', 1)
-            ->where('Voorraad.IsActief', 1)
-            ->where('Product.IsActief', 1)
-            ->orderByDesc('LeverancierOrder.Id')
-            ->select([
-                'Product.Id',
-                'Product.Naam',
-                'Product.Merk',
-                'Product.Omschrijving',
-                'Product.EANcode',
-                'Product.Houdbaarheidsdatum',
-                'Product.InkoopPrijs',
-                'Product.VerkoopPrijs',
-                'Product.Opmerking',
-                'Voorraad.AantalOpVoorraad',
-                'Leverancier.Naam as LeverancierNaam',
-                'Leverancier.Postcode as LeverancierPostcode',
-                'Leverancier.Plaats as LeverancierPlaats',
-                'Leverancier.Email as LeverancierEmail',
-                'Leverancier.Mobiel as LeverancierMobiel',
-            ])
-            ->firstOrFail();
-    }
-
-    private function decimalFromInput(string $value): ?float
-    {
-        $normalized = str_replace(',', '.', trim($value));
-
-        return is_numeric($normalized) ? (float) $normalized : null;
+        return $product;
     }
 }
