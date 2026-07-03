@@ -18,9 +18,9 @@
         align-items: center;
         justify-content: space-between;
         gap: 24px;
-        max-width: 1120px;
+        max-width: 1180px;
         margin: 0 auto;
-        padding: 0 18px;
+        padding: 0 24px;
     }
 
     .site-navbar__brand {
@@ -37,8 +37,8 @@
         flex-wrap: wrap;
         align-items: center;
         justify-content: flex-end;
-        gap: 0;
-        font-size: 12px;
+        gap: 16px;
+        font-size: 13px;
         font-weight: 700;
     }
 
@@ -47,18 +47,6 @@
         color: #fff;
         font: inherit;
         text-decoration: none;
-    }
-
-    .site-navbar__links > a:not(.site-navbar__button) {
-        display: inline-flex;
-        min-height: 30px;
-        align-items: center;
-        padding: 0 7px;
-        border-radius: 6px;
-    }
-
-    .site-navbar__links > a.is-active {
-        background: #9d3b70;
     }
 
     .site-navbar__button {
@@ -74,20 +62,19 @@
     }
 
     .site-navbar__user {
-        margin: 0 9px 0 18px;
         font-size: 12px;
         font-weight: 400;
     }
 
     .page-shell {
-        max-width: 900px;
-        min-height: calc(100vh - 128px);
-        margin: 49px auto 0;
-        padding: 0 18px;
+        max-width: 1180px;
+        min-height: calc(100vh - 118px);
+        margin: 42px auto 0;
+        padding: 0 24px;
     }
 
     .site-footer {
-        margin: 62px 0 0;
+        margin: 45px 0 0;
         padding: 0 24px 18px;
         color: #7d8590;
         font-size: 12px;
