@@ -33,7 +33,7 @@ class MedewerkerController extends Controller
             Log::info("Ophalen van medewerkersoverzicht. Geselecteerde filter: " . ($specialisatie ?: 'geen'));
 
             // Stored Procedure aanroep met JOINs (eis 2 en 5)
-            $results = DB::select('CALL sp_GetMedewerkersBySpecialisatie(?)', [$specialisatie]);
+            $results = $this->getMedewerkersBySpecialisatie($specialisatie);
 
             // Hydrateer de ruwe database-objecten naar Medewerker-modellen zodat Eloquent-relaties werken
             $medewerkerModels = Medewerker::hydrate($results);
@@ -69,6 +69,46 @@ class MedewerkerController extends Controller
         
         // Render de view met de benodigde data (MVC - View component)
         return view('medewerkers.index', compact('medewerkers', 'specialisaties', 'specialisatie', 'totalFound'));
+    }
+
+    /**
+     * Haalt medewerkers op via de stored procedure.
+     * Als die lokaal nog niet is ingeladen, gebruikt deze dezelfde JOIN-query als fallback.
+     */
+    private function getMedewerkersBySpecialisatie(?string $specialisatie): array
+    {
+        try {
+            return DB::select('CALL sp_GetMedewerkersBySpecialisatie(?)', [$specialisatie]);
+        } catch (\Exception $e) {
+            Log::warning("Stored procedure sp_GetMedewerkersBySpecialisatie niet beschikbaar, fallback-query wordt gebruikt: " . $e->getMessage());
+
+            $query = DB::table('Medewerker as m')
+                ->join('MedewerkerPerContact as mpc', 'm.Id', '=', 'mpc.MedewerkerId')
+                ->join('Contact as c', 'mpc.ContactId', '=', 'c.Id')
+                ->select(
+                    'm.*',
+                    'c.Straatnaam',
+                    'c.Huisnummer',
+                    'c.Toevoeging',
+                    'c.Postcode',
+                    'c.Plaats',
+                    DB::raw('c.Email as ContactEmail'),
+                    'c.Mobiel'
+                )
+                ->whereRaw("m.IsActief = b'1'")
+                ->whereRaw("mpc.IsActief = b'1'")
+                ->whereRaw("c.IsActief = b'1'");
+
+            if ($specialisatie && $specialisatie !== 'all') {
+                $query->where('m.Specialisatie', $specialisatie);
+            }
+
+            return $query
+                ->orderBy('m.Achternaam')
+                ->orderBy('m.Voornaam')
+                ->get()
+                ->all();
+        }
     }
 
     /**

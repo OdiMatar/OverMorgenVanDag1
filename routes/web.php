@@ -31,6 +31,9 @@ Route::middleware('auth')->group(function (): void {
     Route::put('/klanten/{klantId}', [KlantController::class, 'update'])->whereNumber('klantId')->name('klanten.update')->can('view-owner-pages');
 
     Route::get('/medewerkers', [MedewerkerController::class, 'index'])->name('medewerkers.index')->can('view-owner-pages');
+    Route::get('/medewerkers/{id}', [MedewerkerController::class, 'show'])->whereNumber('id')->name('medewerkers.show')->can('view-owner-pages');
+    Route::get('/medewerkers/{id}/edit', [MedewerkerController::class, 'edit'])->whereNumber('id')->name('medewerkers.edit')->can('view-owner-pages');
+    Route::put('/medewerkers/{id}', [MedewerkerController::class, 'update'])->whereNumber('id')->name('medewerkers.update')->can('view-owner-pages');
     Route::get('/medewerkers/{id}', [MedewerkerController::class, 'show'])->name('medewerkers.show')->can('view-owner-pages');
     Route::get('/medewerkers/{id}/edit', [MedewerkerController::class, 'edit'])->name('medewerkers.edit')->can('view-owner-pages');
     Route::put('/medewerkers/{id}', [MedewerkerController::class, 'update'])->name('medewerkers.update')->can('view-owner-pages');
