@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BehandelingController;
 use App\Http\Controllers\KlantController;
+use App\Http\Controllers\MedewerkerController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +29,7 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/klanten/{klantId}', [KlantController::class, 'show'])->whereNumber('klantId')->name('klanten.show')->can('view-owner-pages');
     Route::get('/klanten/{klantId}/wijzigen', [KlantController::class, 'edit'])->whereNumber('klantId')->name('klanten.edit')->can('view-owner-pages');
     Route::put('/klanten/{klantId}', [KlantController::class, 'update'])->whereNumber('klantId')->name('klanten.update')->can('view-owner-pages');
-    Route::view('/medewerkers', 'medewerkers.index')->name('medewerkers.index')->can('view-owner-pages');
+    Route::get('/medewerkers', [MedewerkerController::class, 'index'])->name('medewerkers.index')->can('view-owner-pages');
     Route::get('/behandelingen', [BehandelingController::class, 'index'])->name('behandelingen.index')->can('view-owner-pages');
     Route::get('/behandelingen/{behandeling}/producten', [BehandelingController::class, 'producten'])->name('behandelingen.producten.index')->can('view-owner-pages');
     Route::get('/behandelingen/{behandeling}/producten/{product}', [BehandelingController::class, 'productDetail'])->name('behandelingen.producten.show')->can('view-owner-pages');
