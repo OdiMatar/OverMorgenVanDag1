@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\KlantController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,8 @@ Route::match(['get', 'post'], '/uitloggen', [AuthenticatedSessionController::cla
     ->name('logout');
 
 Route::middleware('auth')->group(function (): void {
-    Route::view('/klanten', 'klanten.index')->name('klanten.index')->can('view-owner-pages');
+    Route::match(['get', 'post'], '/klanten', [KlantController::class, 'index'])->name('klanten.index')->can('view-owner-pages');
+    Route::get('/klanten/{klantId}', [KlantController::class, 'show'])->whereNumber('klantId')->name('klanten.show')->can('view-owner-pages');
     Route::view('/medewerkers', 'medewerkers.index')->name('medewerkers.index')->can('view-owner-pages');
     Route::view('/behandelingen', 'behandelingen.index')->name('behandelingen.index')->can('view-owner-pages');
     Route::get('/producten', [ProductController::class, 'index'])->name('producten.index')->can('view-owner-pages');
