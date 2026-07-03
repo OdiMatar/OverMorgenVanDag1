@@ -16,7 +16,7 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/registreren', [RegisteredUserController::class, 'store'])->name('register.store');
 });
 
-Route::post('/uitloggen', [AuthenticatedSessionController::class, 'destroy'])
+Route::match(['get', 'post'], '/uitloggen', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 

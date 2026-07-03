@@ -108,10 +108,7 @@
                 @endif
 
                 <span class="site-navbar__user">{{ auth()->user()->name }} ({{ auth()->user()->role }})</span>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="site-navbar__button" type="submit">Uitloggen</button>
-                </form>
+                <a class="site-navbar__button" href="{{ route('logout') }}">Uitloggen</a>
             @else
                 <a href="{{ route('login') }}">Inloggen</a>
                 <a class="site-navbar__button" href="{{ route('register') }}">Account aanmaken</a>
