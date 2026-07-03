@@ -17,6 +17,19 @@ class Behandeling extends Model
 
     public static function opties(): Collection
     {
+        try {
+            return collect(DB::select('CALL sp_behandelingen_opties()'))
+                ->pluck('Naam')
+                ->prepend('Alle behandelingen')
+                ->push('Overig')
+                ->values();
+        } catch (\Exception) {
+            return static::optiesQuery();
+        }
+    }
+
+    private static function optiesQuery(): Collection
+    {
         return DB::table('Behandeling')
             ->where('IsActief', 1)
             ->orderBy('Id')
@@ -27,6 +40,28 @@ class Behandeling extends Model
     }
 
     public static function overzicht(?string $naam = null): LengthAwarePaginator
+    {
+        try {
+            $behandelingen = collect(DB::select('CALL sp_behandelingen_overzicht(?)', [$naam]));
+            $page = LengthAwarePaginator::resolveCurrentPage();
+            $perPage = 4;
+
+            return new LengthAwarePaginator(
+                $behandelingen->forPage($page, $perPage)->values(),
+                $behandelingen->count(),
+                $perPage,
+                $page,
+                [
+                    'path' => request()->url(),
+                    'query' => request()->query(),
+                ]
+            );
+        } catch (\Exception) {
+            return static::overzichtQuery($naam);
+        }
+    }
+
+    private static function overzichtQuery(?string $naam = null): LengthAwarePaginator
     {
         $query = DB::table('Behandeling')
             ->select([
@@ -72,15 +107,22 @@ class Behandeling extends Model
 
     public static function detail(int $id): object
     {
-        return DB::table('Behandeling')
+        try {
+            return collect(DB::select('CALL sp_behandeling_detail(?)', [$id]))->firstOrFail();
+        } catch (\Exception) {
+            return DB::table('Behandeling')
             ->where('Id', $id)
             ->where('IsActief', 1)
             ->firstOrFail();
+        }
     }
 
     public static function producten(int $behandelingId): Collection
     {
-        return DB::table('BehandelingPerVoorraad')
+        try {
+            return collect(DB::select('CALL sp_behandeling_producten(?)', [$behandelingId]));
+        } catch (\Exception) {
+            return DB::table('BehandelingPerVoorraad')
             ->join('Voorraad', 'Voorraad.Id', '=', 'BehandelingPerVoorraad.VoorraadId')
             ->join('Product', 'Product.Id', '=', 'Voorraad.ProductId')
             ->where('BehandelingPerVoorraad.BehandelingId', $behandelingId)
@@ -98,11 +140,15 @@ class Behandeling extends Model
                 'Voorraad.AantalOpVoorraad',
             ])
             ->get();
+        }
     }
 
     public static function productDetail(int $behandelingId, int $productId): object
     {
-        return DB::table('BehandelingPerVoorraad')
+        try {
+            return collect(DB::select('CALL sp_behandeling_product_detail(?, ?)', [$behandelingId, $productId]))->firstOrFail();
+        } catch (\Exception) {
+            return DB::table('BehandelingPerVoorraad')
             ->join('Voorraad', 'Voorraad.Id', '=', 'BehandelingPerVoorraad.VoorraadId')
             ->join('Product', 'Product.Id', '=', 'Voorraad.ProductId')
             ->leftJoin('LeverancierOrder', function ($join): void {
@@ -137,12 +183,20 @@ class Behandeling extends Model
                 'Leverancier.Mobiel as LeverancierMobiel',
             ])
             ->firstOrFail();
+        }
     }
 
     public static function wijzigProductPrijs(int $productId, float $verkoopprijs): void
     {
-        DB::table('Product')
+        try {
+            DB::statement('CALL sp_behandeling_product_prijs_bijwerken(?, ?)', [$productId, round($verkoopprijs, 2)]);
+        } catch (\Exception) {
+            DB::table('Product')
             ->where('Id', $productId)
-            ->update(['VerkoopPrijs' => round($verkoopprijs, 2)]);
+            ->update([
+                'VerkoopPrijs' => round($verkoopprijs, 2),
+                'DatumGewijzigd' => now(),
+            ]);
+        }
     }
 }
