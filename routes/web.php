@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\MedewerkerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,7 +23,12 @@ Route::match(['get', 'post'], '/uitloggen', [AuthenticatedSessionController::cla
 
 Route::middleware('auth')->group(function (): void {
     Route::view('/klanten', 'klanten.index')->name('klanten.index')->can('view-owner-pages');
-    Route::view('/medewerkers', 'medewerkers.index')->name('medewerkers.index')->can('view-owner-pages');
+    
+    Route::get('/medewerkers', [MedewerkerController::class, 'index'])->name('medewerkers.index')->can('view-owner-pages');
+    Route::get('/medewerkers/{id}', [MedewerkerController::class, 'show'])->name('medewerkers.show')->can('view-owner-pages');
+    Route::get('/medewerkers/{id}/edit', [MedewerkerController::class, 'edit'])->name('medewerkers.edit')->can('view-owner-pages');
+    Route::put('/medewerkers/{id}', [MedewerkerController::class, 'update'])->name('medewerkers.update')->can('view-owner-pages');
+    
     Route::view('/behandelingen', 'behandelingen.index')->name('behandelingen.index')->can('view-owner-pages');
     Route::view('/producten', 'producten.index')->name('producten.index')->can('view-owner-pages');
 });
