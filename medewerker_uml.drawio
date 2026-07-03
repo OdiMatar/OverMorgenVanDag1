@@ -1,0 +1,65 @@
+<mxfile host="Electron" agent="Claude">
+  <diagram name="UML Medewerkers" id="uml-medewerkers">
+    <mxGraphModel dx="1144" dy="696" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- View -->
+        <mxCell id="view" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=6;fontSize=11;" value="&lt;div style=&quot;text-align:center&quot;&gt;&lt;b&gt;MedewerkerView&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;+ data: array[mixed]" vertex="1">
+          <mxGeometry height="70" width="220" x="20" y="20" as="geometry" />
+        </mxCell>
+        
+        <!-- BaseController -->
+        <mxCell id="basecontroller" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=6;fontSize=11;" value="&lt;div style=&quot;text-align:center&quot;&gt;&lt;b&gt;BaseController&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;/&gt;# model(string): object&lt;br&gt;# view(string, array): void" vertex="1">
+          <mxGeometry height="70" width="240" x="300" y="20" as="geometry" />
+        </mxCell>
+        
+        <!-- PDOStatement -->
+        <mxCell id="pdostatement" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=6;fontSize=11;" value="&lt;div style=&quot;text-align:center&quot;&gt;&lt;b&gt;PDOStatement&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;/&gt;+ bindValue(parameter: string, value: mixed, type: int): boolean&lt;br&gt;+ execute(): boolean&lt;br&gt;+ fetch(): object&lt;br&gt;+ fetchAll(): array[mixed]&lt;br&gt;+ rowCount(): int" vertex="1">
+          <mxGeometry height="150" width="320" x="600" y="20" as="geometry" />
+        </mxCell>
+        
+        <!-- MedewerkerController -->
+        <mxCell id="medewerkercontroller" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=6;fontSize=11;" value="&lt;div style=&quot;text-align:center&quot;&gt;&lt;b&gt;MedewerkerController&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;/&gt;- medewerkerModel: MedewerkerModel&lt;hr size=&quot;1&quot;/&gt;+ Medewerkers(): void&lt;br&gt;+ index(): void&lt;br&gt;+ detail(id: int): void&lt;br&gt;+ wijzig(id: int): void&lt;br&gt;+ opslaan(id: int, data: array): void" vertex="1">
+          <mxGeometry height="160" width="280" x="300" y="200" as="geometry" />
+        </mxCell>
+        
+        <!-- PDO -->
+        <mxCell id="pdo" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=6;fontSize=11;" value="&lt;div style=&quot;text-align:center&quot;&gt;&lt;b&gt;PDO&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;/&gt;+ PDO(conn: string, dbUser: string, dbPass: string, options: array): void&lt;br&gt;+ prepare(sql: string): PDOStatement" vertex="1">
+          <mxGeometry height="100" width="320" x="600" y="220" as="geometry" />
+        </mxCell>
+        
+        <!-- MedewerkerModel -->
+        <mxCell id="medewerkermodel" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=6;fontSize=11;" value="&lt;div style=&quot;text-align:center&quot;&gt;&lt;b&gt;MedewerkerModel&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;- db: Database&lt;hr size=&quot;1&quot;&gt;+ MedewerkerModel(db: Database): void&lt;br&gt;+ getMedewerkers(): array[mixed]&lt;br&gt;+ getMedewerkersBySpecialisatie(specialisatie: string): array[mixed]&lt;br&gt;+ getMedewerkerById(id: int): mixed&lt;br&gt;+ updateMedewerker(id: int, data: array): boolean&lt;br&gt;+ emailBestaat(email: string, excludeId: int): boolean" vertex="1">
+          <mxGeometry height="200" width="320" x="220" y="440" as="geometry" />
+        </mxCell>
+        
+        <!-- Database -->
+        <mxCell id="database" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=6;fontSize=11;" value="&lt;div style=&quot;text-align:center&quot;&gt;&lt;b&gt;Database&lt;/b&gt;&lt;/div&gt;&lt;hr size=&quot;1&quot;/&gt;- dbHost: string&lt;br&gt;- dbUser: string&lt;br&gt;- dbPass: string&lt;br&gt;- dbName: string&lt;br&gt;- statement: PDOStatement&lt;br&gt;- dbHandler: PDO&lt;hr size=&quot;1&quot;/&gt;+ Database(): void&lt;br&gt;+ query(sql: string): object&lt;br&gt;+ bind(parameter: mixed, value: mixed, type: int): object&lt;br&gt;+ execute(): object&lt;br&gt;+ resultSet(): array[objects]&lt;br&gt;+ single(): object&lt;br&gt;+ rowCount(): int" vertex="1">
+          <mxGeometry height="330" width="320" x="600" y="360" as="geometry" />
+        </mxCell>
+        
+        <!-- Connections -->
+        <mxCell id="e1" edge="1" parent="1" source="medewerkercontroller" style="endArrow=block;endFill=0;endSize=16;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;fontSize=10;" target="basecontroller" value="Extends">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="medewerkercontroller" style="endArrow=open;endFill=1;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;" target="view">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="medewerkercontroller" style="endArrow=open;endFill=1;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;" target="medewerkermodel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="medewerkermodel" style="endArrow=block;endFill=0;endSize=16;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;" target="database">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="pdo" style="endArrow=open;endFill=1;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;" target="pdostatement">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="database" style="endArrow=open;endFill=1;html=1;edgeStyle=orthogonalEdgeStyle;rounded=0;" target="pdo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
