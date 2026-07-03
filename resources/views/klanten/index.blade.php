@@ -231,7 +231,7 @@
         <p class="klanten-alert" role="alert">{{ session('melding') }}</p>
     @endif
 
-    @if ($melding)
+    @if ($melding && $klanten->isNotEmpty())
         <p class="klanten-alert {{ $klanten->isNotEmpty() ? 'klanten-alert--success' : '' }}" role="status">
             {{ $melding }}
         </p>
