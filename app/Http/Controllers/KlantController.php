@@ -28,8 +28,10 @@ class KlantController extends Controller
 
         $melding = null;
 
-        if ($postcode !== null && $klanten->isEmpty()) {
-            $melding = 'Er zijn geen klanten bekent die de geselecteerde postcode hebben';
+        if ($postcode !== null) {
+            $melding = $klanten->isEmpty()
+                ? 'Er zijn geen klanten bekent die de geselecteerde postcode hebben'
+                : 'Klanten gefilterd op postcode ' . $postcode . '.';
         }
 
         return view('klanten.index', [

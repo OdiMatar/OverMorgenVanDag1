@@ -109,6 +109,10 @@
         font-weight: 700;
     }
 
+    .klanten-alert--success {
+        color: #1f6b4b;
+    }
+
     .klanten-overzicht {
         margin-top: 12px;
         padding: 13px 14px 16px;
@@ -226,7 +230,9 @@
     @endif
 
     @if ($melding)
-        <p class="klanten-alert" role="status">{{ $melding }}</p>
+        <p class="klanten-alert {{ $klanten->isNotEmpty() ? 'klanten-alert--success' : '' }}" role="status">
+            {{ $melding }}
+        </p>
     @endif
 
     <section class="klanten-overzicht" aria-label="Overzicht klanten met contactgegevens">
