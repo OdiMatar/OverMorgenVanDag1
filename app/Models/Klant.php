@@ -26,30 +26,35 @@ class Klant extends Model
 
     public static function vindMetContactgegevens(int $klantId): ?object
     {
-        $klanten = DB::select(
-            "SELECT
-                k.Id AS klant_id,
-                k.Voornaam AS voornaam,
-                k.Tussenvoegsel AS tussenvoegsel,
-                k.Achternaam AS achternaam,
-                k.Relatienummer AS relatienummer,
-                k.Bijzonderheden AS bijzonderheden,
-                CONCAT(c.Straatnaam, ' ', c.Huisnummer, IFNULL(CONCAT(' ', c.Toevoeging), '')) AS adres,
-                c.Postcode AS postcode,
-                c.Plaats AS woonplaats,
-                c.Mobiel AS mobiel,
-                c.Email AS email
-            FROM Klant AS k
-            INNER JOIN KlantPerContact AS kpc ON kpc.KlantId = k.Id
-            INNER JOIN Contact AS c ON c.Id = kpc.ContactId
-            WHERE k.Id = ?
-                AND k.IsActief = b'1'
-                AND kpc.IsActief = b'1'
-                AND c.IsActief = b'1'
-            LIMIT 1",
-            [$klantId]
-        );
+        $klanten = DB::select('CALL sp_klant_detail(?)', [$klantId]);
 
         return $klanten[0] ?? null;
+    }
+
+    public static function contactEmailBestaat(string $email, int $klantId): bool
+    {
+        $resultaat = DB::select('CALL sp_klant_email_bestaat(?, ?)', [$email, $klantId]);
+
+        return (int) ($resultaat[0]->aantal ?? 0) > 0;
+    }
+
+    /**
+     * @param  array<string, mixed>  $contactgegevens
+     */
+    public static function werkContactgegevensBij(int $klantId, array $contactgegevens): int
+    {
+        $resultaat = DB::select('CALL sp_klant_contact_bijwerken(?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+            $klantId,
+            $contactgegevens['email'],
+            $contactgegevens['mobiel'],
+            $contactgegevens['straatnaam'],
+            $contactgegevens['huisnummer'],
+            $contactgegevens['toevoeging'],
+            $contactgegevens['postcode'],
+            $contactgegevens['woonplaats'],
+            $contactgegevens['bijzonderheden'],
+        ]);
+
+        return (int) ($resultaat[0]->aantal_gewijzigd ?? 0);
     }
 }
