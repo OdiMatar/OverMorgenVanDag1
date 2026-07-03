@@ -4,8 +4,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BehandelingController;
 use App\Http\Controllers\KlantController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MedewerkerController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
