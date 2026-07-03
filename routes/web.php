@@ -22,7 +22,8 @@ Route::match(['get', 'post'], '/uitloggen', [AuthenticatedSessionController::cla
     ->name('logout');
 
 Route::middleware('auth')->group(function (): void {
-    Route::get('/klanten', [KlantController::class, 'index'])->name('klanten.index')->can('view-owner-pages');
+    Route::match(['get', 'post'], '/klanten', [KlantController::class, 'index'])->name('klanten.index')->can('view-owner-pages');
+    Route::get('/klanten/{klantId}', [KlantController::class, 'show'])->whereNumber('klantId')->name('klanten.show')->can('view-owner-pages');
     Route::view('/medewerkers', 'medewerkers.index')->name('medewerkers.index')->can('view-owner-pages');
     Route::view('/behandelingen', 'behandelingen.index')->name('behandelingen.index')->can('view-owner-pages');
     Route::view('/producten', 'producten.index')->name('producten.index')->can('view-owner-pages');

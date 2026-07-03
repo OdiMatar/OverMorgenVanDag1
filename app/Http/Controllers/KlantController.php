@@ -34,10 +34,47 @@ class KlantController extends Controller
                 : 'Klanten gefilterd op postcode '.$postcode.'.';
         }
 
+        Log::channel('klanten')->info('Klantenoverzicht geopend.', [
+            'postcode' => $postcode,
+            'aantal_klanten' => $klanten->count(),
+            'gebruiker_id' => $request->user()?->id,
+        ]);
+
         return view('klanten.index', [
             'klanten' => $klanten,
             'postcode' => $postcode,
             'melding' => $melding,
+        ]);
+    }
+
+    public function show(int $klantId): View|RedirectResponse
+    {
+        try {
+            $klant = Klant::vindMetContactgegevens($klantId);
+        } catch (Throwable $exception) {
+            $this->logTechnischeFout($exception, null);
+
+            return redirect()
+                ->route('klanten.index')
+                ->with('melding', 'De klantdetails konden niet worden opgehaald. Probeer het later opnieuw.');
+        }
+
+        if ($klant === null) {
+            Log::channel('klanten')->warning('Klantdetails niet gevonden.', [
+                'klant_id' => $klantId,
+            ]);
+
+            return redirect()
+                ->route('klanten.index')
+                ->with('melding', 'De gekozen klant is niet gevonden.');
+        }
+
+        Log::channel('klanten')->info('Klantdetails geopend.', [
+            'klant_id' => $klantId,
+        ]);
+
+        return view('klanten.show', [
+            'klant' => $klant,
         ]);
     }
 
@@ -57,6 +94,7 @@ class KlantController extends Controller
             ]);
         }
 
+        Log::channel('klanten')->error('Klantactie mislukt.', $context);
         Log::error('Klantgegevens ophalen mislukt.', $context);
     }
 }
