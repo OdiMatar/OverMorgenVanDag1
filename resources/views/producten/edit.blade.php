@@ -18,6 +18,7 @@
     .product-form-grid input { min-height: 34px; box-sizing: border-box; padding: 0 9px; border: 1px solid #d6dde6; border-radius: 7px; color: #344054; font-size: 13px; }
     .product-form-grid input:disabled { background: #f7f8fa; color: #8490a4; }
     .product-form-grid input.is-invalid { border-color: #ff4658; }
+    .product-form-grid small { color: #6c7683; font-size: 12px; font-weight: 400; }
     .product-field-error { color: #ff4658; font-size: 12px; font-weight: 400; }
     .product-alert { width: min(100%, 760px); margin-bottom: 18px; padding: 16px; border-radius: 5px; background: #f9d4d9; color: #7e2230; border: 1px solid #f3a3ad; }
     .product-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
@@ -70,6 +71,7 @@
                     @if (isset($errors) && $errors->has('houdbaarheidsdatum'))
                         <strong class="product-field-error">{{ $errors->first('houdbaarheidsdatum') }}</strong>
                     @endif
+                    <small>De houdbaarheidsdatum mag uiterlijk met 7 dagen worden verlengd</small>
                 </label>
                 <label>Leverancier <input type="text" value="{{ $product->LeverancierNaam ?? 'Onbekend' }}" disabled></label>
             </div>
