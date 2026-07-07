@@ -55,7 +55,7 @@
                 <label>Product <input type="text" value="{{ $product->Naam }}" disabled></label>
                 <label>Merk <input type="text" value="{{ $product->Merk }}" disabled></label>
                 <label>Omschrijving <input type="text" value="{{ $product->Omschrijving }}" disabled></label>
-                <label>EAN-code <input type="text" value="{{ $product->EANcode }}" disabled></label>
+                <label>EAN-code <input type="text" value="{{ $product->EANcode }}" disabled readonly aria-readonly="true"></label>
                 <label>Huidige houdbaarheidsdatum <input type="text" value="{{ $datumNl($product->Houdbaarheidsdatum) }}" disabled></label>
                 <label>Aantal op voorraad <input type="text" value="{{ $product->AantalOpVoorraad ?? 0 }}" disabled></label>
                 <label>Inkoopprijs <input type="text" value="{{ $geld($product->InkoopPrijs) }}" disabled></label>
