@@ -224,6 +224,9 @@
                             disabled
                             readonly
                             aria-readonly="true"
+                            aria-disabled="true"
+                            tabindex="-1"
+                            autocomplete="off"
                         >
                     </label>
                     <label>Houdbaarheidsdatum <input type="text" value="{{ \Carbon\Carbon::parse($product->Houdbaarheidsdatum)->format('d-m-Y') }}" disabled></label>
