@@ -115,7 +115,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($producten as $product)
+                        @forelse ($producten as $product)
                             <tr>
                                 <td>{{ $product->Naam }}</td>
                                 <td>{{ $product->Merk }}</td>
@@ -127,15 +127,19 @@
                                     <a class="product-primary-button" href="{{ route('behandelingen.producten.show', [$behandeling->Id, $product->Id]) }}">Details</a>
                                 </td>
                             </tr>
-                        @endforeach
-                        <tr>
-                            <td colspan="6"></td>
-                            <td>
-                                <a class="product-secondary-button" href="{{ route('behandelingen.index') }}">Terug</a>
-                            </td>
-                        </tr>
+                        @empty
+                            <tr>
+                                <td class="behandelingen-empty-message" colspan="7">
+                                    Er zijn geen producten bekend bij deze behandeling
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <div class="product-actions">
+                <a class="product-secondary-button" href="{{ route('behandelingen.index') }}">Terug</a>
             </div>
         </section>
     @elseif ($scherm === 'detail')
@@ -219,13 +223,18 @@
                     <label>Huidige verkoopprijs <input type="text" value="EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}" disabled></label>
                     <label>Plaats leverancier <input type="text" value="{{ $product->LeverancierPlaats ?? '-' }}" disabled></label>
                     <label>
-                        Nieuwe verkoopprijs <span>*</span>
-                        <input
-                            @class(['is-invalid' => isset($errors) && $errors->has('nieuwe_verkoopprijs')])
-                            type="text"
-                            name="nieuwe_verkoopprijs"
-                            value="{{ old('nieuwe_verkoopprijs', number_format((float) $product->VerkoopPrijs, 2, ',', '')) }}"
-                        >
+                        <span class="product-field-label">Nieuwe verkoopprijs <span>*</span></span>
+                        <div class="product-input-with-status">
+                            <input
+                                @class(['is-invalid' => isset($errors) && $errors->has('nieuwe_verkoopprijs')])
+                                type="text"
+                                name="nieuwe_verkoopprijs"
+                                value="{{ old('nieuwe_verkoopprijs', number_format((float) $product->VerkoopPrijs, 2, ',', '')) }}"
+                            >
+                            @if (isset($errors) && $errors->has('nieuwe_verkoopprijs'))
+                                <span class="product-input-status" aria-hidden="true">!</span>
+                            @endif
+                        </div>
                         @if (isset($errors) && $errors->has('nieuwe_verkoopprijs'))
                             <strong class="product-field-error">{{ $errors->first('nieuwe_verkoopprijs') }}</strong>
                         @endif
@@ -256,4 +265,3 @@
 @endif
 
 @include('components.site-footer')
-

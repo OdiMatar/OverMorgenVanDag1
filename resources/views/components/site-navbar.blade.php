@@ -252,6 +252,7 @@
     }
 
     .behandelingen-table td:nth-child(4) {
+        color: #5f6873;
         font-weight: 800;
     }
 
@@ -271,7 +272,7 @@
 
     .behandelingen-empty-message {
         height: 46px;
-        color: #202b3f;
+        color: #6f7886;
         text-align: center !important;
     }
 
@@ -301,6 +302,10 @@
         border-bottom: 1px solid #e5e9ef;
         text-align: left;
         vertical-align: middle;
+    }
+
+    .product-table tbody tr:last-child td {
+        border-bottom: 0;
     }
 
     .product-table th {
@@ -365,6 +370,10 @@
         border-bottom: 1px solid #e5e9ef;
     }
 
+    .product-detail-list > div:last-of-type {
+        border-bottom: 0 !important;
+    }
+
     .product-detail-list dt,
     .product-detail-list dd {
         margin: 0;
@@ -406,6 +415,14 @@
         color: #d40a2f;
     }
 
+    .product-form-grid .product-field-label {
+        color: #263244;
+    }
+
+    .product-form-grid .product-field-label span {
+        color: #d40a2f;
+    }
+
     .product-form-grid input {
         width: 100%;
         min-height: 32px;
@@ -416,6 +433,31 @@
         background: #fff;
         color: #344054;
         font-size: 13px;
+    }
+
+    .product-input-with-status {
+        position: relative;
+    }
+
+    .product-input-with-status input {
+        padding-right: 30px;
+    }
+
+    .product-input-status {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        display: grid;
+        width: 17px;
+        height: 17px;
+        place-items: center;
+        border-radius: 50%;
+        background: #ff4658;
+        color: #fff !important;
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1;
+        transform: translateY(-50%);
     }
 
     .product-form-grid input:disabled {
