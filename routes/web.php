@@ -6,6 +6,7 @@ use App\Http\Controllers\BehandelingController;
 use App\Http\Controllers\KlantController;
 use App\Http\Controllers\MedewerkerController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AfspraakController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -45,4 +46,12 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/producten/{id}', [ProductController::class, 'show'])->name('producten.show')->can('view-owner-pages');
     Route::get('/producten/{id}/edit', [ProductController::class, 'edit'])->name('producten.edit')->can('view-owner-pages');
     Route::put('/producten/{id}', [ProductController::class, 'update'])->name('producten.update')->can('view-owner-pages');
+
+    // Afspraken routes for clients
+    Route::get('/afspraken', [AfspraakController::class, 'index'])->name('afspraken.index');
+    Route::get('/afspraken/aanmaken', [AfspraakController::class, 'create'])->name('afspraken.create');
+    Route::post('/afspraken', [AfspraakController::class, 'store'])->name('afspraken.store');
+    Route::get('/afspraken/{id}/wijzigen', [AfspraakController::class, 'edit'])->whereNumber('id')->name('afspraken.edit');
+    Route::put('/afspraken/{id}', [AfspraakController::class, 'update'])->whereNumber('id')->name('afspraken.update');
+    Route::post('/afspraken/{id}/annuleren', [AfspraakController::class, 'destroy'])->whereNumber('id')->name('afspraken.destroy');
 });

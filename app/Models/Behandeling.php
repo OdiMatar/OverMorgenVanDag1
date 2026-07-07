@@ -18,6 +18,7 @@ class Behandeling extends Model
     public static function opties(): Collection
     {
         try {
+            // Eerst de stored procedure gebruiken; als die ontbreekt valt het model terug op Query Builder.
             return collect(DB::select('CALL sp_behandelingen_opties()'))
                 ->pluck('Naam')
                 ->prepend('Alle behandelingen')
@@ -42,6 +43,7 @@ class Behandeling extends Model
     public static function overzicht(?string $naam = null): LengthAwarePaginator
     {
         try {
+            // Stored procedures leveren gewone arrays terug, daarom pagineren we hier handmatig.
             $behandelingen = collect(DB::select('CALL sp_behandelingen_overzicht(?)', [$naam]));
             $page = LengthAwarePaginator::resolveCurrentPage();
             $perPage = 4;
@@ -72,19 +74,19 @@ class Behandeling extends Model
                 'Behandeling.Prijs',
                 DB::raw('COUNT(DISTINCT Product.Id) as AantalProducten'),
             ])
-            ->leftJoin('BehandelingPerVoorraad', function ($join): void {
+            ->join('BehandelingPerVoorraad', function ($join): void {
                 $join->on('BehandelingPerVoorraad.BehandelingId', '=', 'Behandeling.Id')
                     ->where('BehandelingPerVoorraad.IsActief', 1);
             })
-            ->leftJoin('Voorraad', function ($join): void {
+            ->join('Voorraad', function ($join): void {
                 $join->on('Voorraad.Id', '=', 'BehandelingPerVoorraad.VoorraadId')
                     ->where('Voorraad.IsActief', 1);
             })
-            ->leftJoin('Product', function ($join): void {
+            ->join('Product', function ($join): void {
                 $join->on('Product.Id', '=', 'Voorraad.ProductId')
                     ->where('Product.IsActief', 1);
             })
-            ->leftJoin('MedewerkerPerBehandeling', function ($join): void {
+            ->join('MedewerkerPerBehandeling', function ($join): void {
                 $join->on('MedewerkerPerBehandeling.BehandelingId', '=', 'Behandeling.Id')
                     ->where('MedewerkerPerBehandeling.IsActief', 1);
             })
@@ -122,10 +124,13 @@ class Behandeling extends Model
         try {
             return collect(DB::select('CALL sp_behandeling_producten(?)', [$behandelingId]));
         } catch (\Exception) {
+            // Inner joins tonen alleen producten die echt aan deze actieve behandeling gekoppeld zijn.
             return DB::table('BehandelingPerVoorraad')
+            ->join('Behandeling', 'Behandeling.Id', '=', 'BehandelingPerVoorraad.BehandelingId')
             ->join('Voorraad', 'Voorraad.Id', '=', 'BehandelingPerVoorraad.VoorraadId')
             ->join('Product', 'Product.Id', '=', 'Voorraad.ProductId')
             ->where('BehandelingPerVoorraad.BehandelingId', $behandelingId)
+            ->where('Behandeling.IsActief', 1)
             ->where('BehandelingPerVoorraad.IsActief', 1)
             ->where('Voorraad.IsActief', 1)
             ->where('Product.IsActief', 1)
@@ -149,18 +154,20 @@ class Behandeling extends Model
             return collect(DB::select('CALL sp_behandeling_product_detail(?, ?)', [$behandelingId, $productId]))->firstOrFail();
         } catch (\Exception) {
             return DB::table('BehandelingPerVoorraad')
+            ->join('Behandeling', 'Behandeling.Id', '=', 'BehandelingPerVoorraad.BehandelingId')
             ->join('Voorraad', 'Voorraad.Id', '=', 'BehandelingPerVoorraad.VoorraadId')
             ->join('Product', 'Product.Id', '=', 'Voorraad.ProductId')
-            ->leftJoin('LeverancierOrder', function ($join): void {
+            ->join('LeverancierOrder', function ($join): void {
                 $join->on('LeverancierOrder.ProductId', '=', 'Product.Id')
                     ->where('LeverancierOrder.IsActief', 1);
             })
-            ->leftJoin('Leverancier', function ($join): void {
+            ->join('Leverancier', function ($join): void {
                 $join->on('Leverancier.Id', '=', 'LeverancierOrder.LeverancierId')
                     ->where('Leverancier.IsActief', 1);
             })
             ->where('BehandelingPerVoorraad.BehandelingId', $behandelingId)
             ->where('Product.Id', $productId)
+            ->where('Behandeling.IsActief', 1)
             ->where('BehandelingPerVoorraad.IsActief', 1)
             ->where('Voorraad.IsActief', 1)
             ->where('Product.IsActief', 1)
@@ -191,6 +198,7 @@ class Behandeling extends Model
         try {
             DB::statement('CALL sp_behandeling_product_prijs_bijwerken(?, ?)', [$productId, round($verkoopprijs, 2)]);
         } catch (\Exception) {
+            // Fallback wanneer de stored procedure nog niet in de database staat.
             DB::table('Product')
             ->where('Id', $productId)
             ->update([

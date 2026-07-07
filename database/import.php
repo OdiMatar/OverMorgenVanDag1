@@ -20,7 +20,12 @@ try {
     if ($sql === false) {
         throw new Exception("Could not read SQL file: $sqlFile");
     }
+    // Comment out restoring foreign key checks in middle of script execution
+    $sql = str_replace('SET FOREIGN_KEY_CHECKS = 1;', '-- SET FOREIGN_KEY_CHECKS = 1;', $sql);
+
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
     $pdo->exec($sql);
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
     echo "Database kniploket_tiko imported successfully!\n";
 
     // Selecteer de kniploket_tiko database en importeer Stored Procedures
@@ -30,7 +35,9 @@ try {
     // 2. Importeer basis schema en testdata voor kerentaak_ex_test
     echo "Executing SQL script for kerentaak_ex_test...\n";
     $testSql = str_replace('kniploket_tiko', 'kerentaak_ex_test', $sql);
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
     $pdo->exec($testSql);
+    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
     echo "Database kerentaak_ex_test imported successfully!\n";
 
     // Selecteer de testdatabase en importeer Stored Procedures
