@@ -465,20 +465,6 @@
         color: #8490a4;
     }
 
-    .product-readonly-value {
-        display: flex;
-        width: 100%;
-        min-height: 32px;
-        box-sizing: border-box;
-        align-items: center;
-        padding: 0 9px;
-        border: 1px solid #d6dde6;
-        border-radius: 7px;
-        background: #f7f8fa;
-        color: #8490a4;
-        font-size: 13px;
-    }
-
     .product-form-grid input.is-invalid {
         border-color: #ff4658;
         color: #d40a2f;
