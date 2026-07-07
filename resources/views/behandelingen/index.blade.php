@@ -215,7 +215,7 @@
                     <label>Product <input type="text" value="{{ $product->Naam }}" disabled></label>
                     <label>Merk <input type="text" value="{{ $product->Merk }}" disabled></label>
                     <label>Omschrijving <input type="text" value="{{ $product->Omschrijving }}" disabled></label>
-                    <label>EAN-code <input type="text" value="{{ $product->EANcode }}" disabled readonly aria-readonly="true"></label>
+                    <label>EAN-code <span class="product-readonly-value">{{ $product->EANcode }}</span></label>
                     <label>Houdbaarheidsdatum <input type="text" value="{{ \Carbon\Carbon::parse($product->Houdbaarheidsdatum)->format('d-m-Y') }}" disabled></label>
                     <label>Aantal op voorraad <input type="text" value="{{ $product->AantalOpVoorraad }}" disabled></label>
                     <label>Inkoopprijs <input type="text" value="EUR {{ number_format((float) $product->InkoopPrijs, 2, ',', '.') }}" disabled></label>
