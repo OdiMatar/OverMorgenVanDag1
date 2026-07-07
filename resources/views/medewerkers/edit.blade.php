@@ -6,6 +6,12 @@
     Voldoet aan MVC (View), PSR-12, responsiviteit, validatie (client & server) en klantterugkoppeling.
 --}}
 
+<style>
+    .required-marker {
+        color: #d40a2f;
+    }
+</style>
+
 <main class="page-shell">
     {{-- Foutmelding aan de eindgebruiker (Terugkoppeling acties) --}}
     @if (session('error'))
@@ -44,7 +50,7 @@
                     
                     {{-- Naam (Client-side required validatie) --}}
                     <label style="display: grid; gap: 6px; color: #20242a; font-weight: 700; font-size: 14px; width: 100%;">
-                        Naam *
+                        <span>Naam <span class="required-marker">*</span></span>
                         <input name="naam" type="text" value="{{ old('naam', $medewerker->naam) }}" required style="min-height: 38px; padding: 8px 10px; border: 1px solid {{ $errors->has('naam') ? '#b00020' : '#cfd6df' }}; border-radius: 7px; font: inherit; width: 100%; box-sizing: border-box;">
                         @error('naam')
                             <span style="color: #b00020; font-size: 12px; font-weight: 400; margin-top: 4px;">{{ $message }}</span>
@@ -53,7 +59,7 @@
 
                     {{-- Geboortedatum (Client-side required validatie) --}}
                     <label style="display: grid; gap: 6px; color: #20242a; font-weight: 700; font-size: 14px; width: 100%;">
-                        Geboortedatum *
+                        <span>Geboortedatum <span class="required-marker">*</span></span>
                         <div style="position: relative; display: grid; width: 100%;">
                             <input name="geboortedatum" type="text" placeholder="dd-mm-yyyy" value="{{ old('geboortedatum', $medewerker->Geboortedatum ? $medewerker->Geboortedatum->format('d-m-Y') : '') }}" required style="min-height: 38px; padding: 8px 36px 8px 10px; border: 1px solid {{ $errors->has('geboortedatum') ? '#b00020' : '#cfd6df' }}; border-radius: 7px; font: inherit; width: 100%; box-sizing: border-box;">
                             {{-- Agenda Icoon --}}
@@ -75,7 +81,7 @@
                     {{-- Huisnummer & Toevoeging --}}
                     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 12px; width: 100%;">
                         <label style="display: grid; gap: 6px; color: #20242a; font-weight: 700; font-size: 14px;">
-                            Huisnummer *
+                            <span>Huisnummer <span class="required-marker">*</span></span>
                             <input name="huisnummer" type="text" value="{{ old('huisnummer', $medewerker->contact->Huisnummer ?? '') }}" required style="min-height: 38px; padding: 8px 10px; border: 1px solid {{ $errors->has('huisnummer') ? '#b00020' : '#cfd6df' }}; border-radius: 7px; font: inherit; width: 100%; box-sizing: border-box;">
                             @error('huisnummer')
                                 <span style="color: #b00020; font-size: 12px; font-weight: 400; margin-top: 4px;">{{ $message }}</span>
@@ -92,7 +98,7 @@
 
                     {{-- Plaats --}}
                     <label style="display: grid; gap: 6px; color: #20242a; font-weight: 700; font-size: 14px; width: 100%;">
-                        Plaats *
+                        <span>Plaats <span class="required-marker">*</span></span>
                         <input name="plaats" type="text" value="{{ old('plaats', $medewerker->contact->Plaats ?? '') }}" required style="min-height: 38px; padding: 8px 10px; border: 1px solid {{ $errors->has('plaats') ? '#b00020' : '#cfd6df' }}; border-radius: 7px; font: inherit; width: 100%; box-sizing: border-box;">
                         @error('plaats')
                             <span style="color: #b00020; font-size: 12px; font-weight: 400; margin-top: 4px;">{{ $message }}</span>
@@ -106,7 +112,7 @@
                     
                     {{-- Specialisatie met selectieveld --}}
                     <label style="display: grid; gap: 6px; color: #20242a; font-weight: 700; font-size: 14px; position: relative; width: 100%;">
-                        Specialisatie *
+                        <span>Specialisatie <span class="required-marker">*</span></span>
                         <div style="position: relative; display: grid; width: 100%;">
                             {{-- Dropdown met custom styling en validatie visualisatie --}}
                             <select name="specialisatie" style="min-height: 38px; padding: 8px {{ $errors->has('specialisatie') ? '36px' : '12px' }} 8px 12px; border: 1px solid {{ $errors->has('specialisatie') ? '#b00020' : '#cfd6df' }}; border-radius: 7px; font: inherit; background: #fff; cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%252369717c%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 12px top 50%; background-size: 10px auto; width: 100%; box-sizing: border-box;">
@@ -128,7 +134,7 @@
 
                     {{-- Contact e-mail (Client-side required en type="email" validatie) --}}
                     <label style="display: grid; gap: 6px; color: #20242a; font-weight: 700; font-size: 14px; width: 100%;">
-                        Contact e-mail *
+                        <span>Contact e-mail <span class="required-marker">*</span></span>
                         <input name="email" type="email" value="{{ old('email', $medewerker->contact->Email ?? '') }}" required style="min-height: 38px; padding: 8px 10px; border: 1px solid {{ $errors->has('email') ? '#b00020' : '#cfd6df' }}; border-radius: 7px; font: inherit; width: 100%; box-sizing: border-box;">
                         @error('email')
                             <span style="color: #b00020; font-size: 12px; font-weight: 400; margin-top: 4px;">{{ $message }}</span>
@@ -137,7 +143,7 @@
 
                     {{-- Straatnaam --}}
                     <label style="display: grid; gap: 6px; color: #20242a; font-weight: 700; font-size: 14px; width: 100%;">
-                        Straatnaam *
+                        <span>Straatnaam <span class="required-marker">*</span></span>
                         <input name="straatnaam" type="text" value="{{ old('straatnaam', $medewerker->contact->Straatnaam ?? '') }}" required style="min-height: 38px; padding: 8px 10px; border: 1px solid {{ $errors->has('straatnaam') ? '#b00020' : '#cfd6df' }}; border-radius: 7px; font: inherit; width: 100%; box-sizing: border-box;">
                         @error('straatnaam')
                             <span style="color: #b00020; font-size: 12px; font-weight: 400; margin-top: 4px;">{{ $message }}</span>
@@ -146,7 +152,7 @@
 
                     {{-- Postcode --}}
                     <label style="display: grid; gap: 6px; color: #20242a; font-weight: 700; font-size: 14px; width: 100%;">
-                        Postcode *
+                        <span>Postcode <span class="required-marker">*</span></span>
                         <input name="postcode" type="text" value="{{ old('postcode', $medewerker->contact->Postcode ?? '') }}" required style="min-height: 38px; padding: 8px 10px; border: 1px solid {{ $errors->has('postcode') ? '#b00020' : '#cfd6df' }}; border-radius: 7px; font: inherit; width: 100%; box-sizing: border-box;">
                         @error('postcode')
                             <span style="color: #b00020; font-size: 12px; font-weight: 400; margin-top: 4px;">{{ $message }}</span>
@@ -155,7 +161,7 @@
 
                     {{-- Mobiel --}}
                     <label style="display: grid; gap: 6px; color: #20242a; font-weight: 700; font-size: 14px; width: 100%;">
-                        Mobiel *
+                        <span>Mobiel <span class="required-marker">*</span></span>
                         <input name="mobiel" type="text" value="{{ old('mobiel', $medewerker->contact->Mobiel ?? '') }}" required style="min-height: 38px; padding: 8px 10px; border: 1px solid {{ $errors->has('mobiel') ? '#b00020' : '#cfd6df' }}; border-radius: 7px; font: inherit; width: 100%; box-sizing: border-box;">
                         @error('mobiel')
                             <span style="color: #b00020; font-size: 12px; font-weight: 400; margin-top: 4px;">{{ $message }}</span>
