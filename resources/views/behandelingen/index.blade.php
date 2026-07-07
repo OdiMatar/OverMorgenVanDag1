@@ -1,6 +1,7 @@
 @include('components.site-navbar')
 
 <main class="page-shell behandelingen-page">
+    {{-- Overzicht met filter, telling en paginering van behandelingen. --}}
     @if (($scherm ?? 'overzicht') === 'overzicht')
         <nav class="behandelingen-breadcrumb" aria-label="Kruimelpad">
             <a href="{{ route('home') }}">Home</a>
@@ -89,6 +90,7 @@
                 </table>
             </div>
         </section>
+    {{-- Productlijst die bij de geselecteerde behandeling hoort. --}}
     @elseif ($scherm === 'producten')
         <nav class="behandelingen-breadcrumb" aria-label="Kruimelpad">
             <a href="{{ route('home') }}">Home</a>
@@ -142,6 +144,7 @@
                 <a class="product-secondary-button" href="{{ route('behandelingen.index') }}">Terug</a>
             </div>
         </section>
+    {{-- Detailpagina van een product binnen een behandeling. --}}
     @elseif ($scherm === 'detail')
         @if (session('status_success'))
             <div class="product-alert product-alert-success" data-auto-hide>
@@ -189,6 +192,7 @@
                 <a class="product-secondary-button" href="{{ route('behandelingen.producten.index', $behandeling->Id) }}">Terug</a>
             </div>
         </section>
+    {{-- Wijzigformulier voor de verkoopprijs van een gekoppeld product. --}}
     @elseif ($scherm === 'wijzigen')
         @if (session('status_error'))
             <div class="product-alert product-alert-error">
