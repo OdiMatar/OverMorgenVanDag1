@@ -252,7 +252,7 @@
     }
 
     .behandelingen-table td:nth-child(4) {
-        color: #495057;
+        color: #5f6873;
         font-weight: 800;
     }
 
