@@ -115,7 +115,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($producten as $product)
+                        @forelse ($producten as $product)
                             <tr>
                                 <td>{{ $product->Naam }}</td>
                                 <td>{{ $product->Merk }}</td>
@@ -127,15 +127,19 @@
                                     <a class="product-primary-button" href="{{ route('behandelingen.producten.show', [$behandeling->Id, $product->Id]) }}">Details</a>
                                 </td>
                             </tr>
-                        @endforeach
-                        <tr>
-                            <td colspan="6"></td>
-                            <td>
-                                <a class="product-secondary-button" href="{{ route('behandelingen.index') }}">Terug</a>
-                            </td>
-                        </tr>
+                        @empty
+                            <tr>
+                                <td class="behandelingen-empty-message" colspan="7">
+                                    Er zijn geen producten bekend bij deze behandeling
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <div class="product-actions">
+                <a class="product-secondary-button" href="{{ route('behandelingen.index') }}">Terug</a>
             </div>
         </section>
     @elseif ($scherm === 'detail')
@@ -256,4 +260,3 @@
 @endif
 
 @include('components.site-footer')
-
