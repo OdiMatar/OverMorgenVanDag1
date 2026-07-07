@@ -17,7 +17,7 @@
     .product-form-grid label { display: grid; gap: 6px; color: #263244; font-size: 12px; font-weight: 800; }
     .product-form-grid input { min-height: 34px; box-sizing: border-box; padding: 0 9px; border: 1px solid #d6dde6; border-radius: 7px; color: #344054; font-size: 13px; }
     .product-form-grid input:disabled { background: #f7f8fa; color: #8490a4; }
-    .product-readonly-value { display: flex; min-height: 34px; box-sizing: border-box; align-items: center; padding: 0 9px; border: 1px solid #d6dde6; border-radius: 7px; background: #f7f8fa; color: #8490a4; font-size: 13px; }
+    .product-input--inactive { background: #f7f8fa; color: #8490a4; cursor: not-allowed; pointer-events: none; }
     .product-form-grid input.is-invalid { border-color: #ff4658; }
     .product-form-grid small { color: #6c7683; font-size: 12px; font-weight: 400; }
     .product-field-error { color: #ff4658; font-size: 12px; font-weight: 400; }
@@ -56,7 +56,17 @@
                 <label>Product <input type="text" value="{{ $product->Naam }}" disabled></label>
                 <label>Merk <input type="text" value="{{ $product->Merk }}" disabled></label>
                 <label>Omschrijving <input type="text" value="{{ $product->Omschrijving }}" disabled></label>
-                <label>EAN-code <span class="product-readonly-value">{{ $product->EANcode }}</span></label>
+                <label>
+                    EAN-code
+                    <input
+                        class="product-input--inactive"
+                        type="text"
+                        value="{{ $product->EANcode }}"
+                        disabled
+                        readonly
+                        aria-readonly="true"
+                    >
+                </label>
                 <label>Huidige houdbaarheidsdatum <input type="text" value="{{ $datumNl($product->Houdbaarheidsdatum) }}" disabled></label>
                 <label>Aantal op voorraad <input type="text" value="{{ $product->AantalOpVoorraad ?? 0 }}" disabled></label>
                 <label>Inkoopprijs <input type="text" value="{{ $geld($product->InkoopPrijs) }}" disabled></label>
