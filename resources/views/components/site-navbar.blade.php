@@ -365,8 +365,8 @@
         border-bottom: 1px solid #e5e9ef;
     }
 
-    .product-detail-list div:last-child {
-        border-bottom: 0;
+    .product-detail-list > div:last-of-type {
+        border-bottom: 0 !important;
     }
 
     .product-detail-list dt,
