@@ -304,6 +304,10 @@
         vertical-align: middle;
     }
 
+    .product-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
     .product-table th {
         font-weight: 800;
     }
