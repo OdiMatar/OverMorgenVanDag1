@@ -65,9 +65,6 @@
                         disabled
                         readonly
                         aria-readonly="true"
-                        aria-disabled="true"
-                        tabindex="-1"
-                        autocomplete="off"
                     >
                 </label>
                 <label>Huidige houdbaarheidsdatum <input type="text" value="{{ $datumNl($product->Houdbaarheidsdatum) }}" disabled></label>
