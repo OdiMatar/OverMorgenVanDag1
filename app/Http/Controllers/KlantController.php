@@ -29,6 +29,20 @@ class KlantController extends Controller
                 ->with('melding', 'De klantgegevens konden niet worden opgehaald. Probeer het later opnieuw.');
         }
 
+        // Handmatige paginering (4 klanten per pagina) conform de wireframes/foto
+        $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 4;
+        $currentItems = $klanten->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        
+        $paginatedKlanten = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentItems,
+            $klanten->count(),
+            $perPage,
+            $currentPage,
+            ['path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath()]
+        );
+        $paginatedKlanten->withQueryString();
+
         $melding = null;
 
         if ($postcode !== null) {
@@ -44,7 +58,7 @@ class KlantController extends Controller
         ]);
 
         return view('klanten.index', [
-            'klanten' => $klanten,
+            'klanten' => $paginatedKlanten,
             'postcode' => $postcode,
             'melding' => $melding,
         ]);

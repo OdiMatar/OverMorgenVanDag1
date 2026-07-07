@@ -137,6 +137,36 @@
         font-weight: 700;
     }
 
+    .klanten-pagination {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .klanten-page-link {
+        display: inline-grid;
+        min-width: 30px;
+        height: 30px;
+        place-items: center;
+        border: 1px solid #dde5ef;
+        border-radius: 7px;
+        color: #d40a2f;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .klanten-page-link.is-active {
+        border-color: #d40a2f;
+        background: #d40a2f;
+        color: #fff;
+    }
+
+    .klanten-page-link.is-disabled {
+        color: #cbd3dd;
+    }
+
     .klanten-table-wrap {
         overflow-x: auto;
     }
@@ -254,7 +284,31 @@
     @endif
 
     <section class="klanten-overzicht" aria-label="Overzicht klanten met contactgegevens">
-        <p class="klanten-count">Gevonden klanten - {{ $klanten->count() }} klant(en)</p>
+        <p class="klanten-count">Gevonden klanten - {{ $klanten->total() }} klant(en)</p>
+
+        @if ($klanten->lastPage() > 1)
+            <nav class="klanten-pagination" aria-label="Paginering klanten">
+                @if ($klanten->onFirstPage())
+                    <span class="klanten-page-link is-disabled">&lsaquo;</span>
+                @else
+                    <a class="klanten-page-link" href="{{ $klanten->previousPageUrl() }}" aria-label="Vorige pagina">&lsaquo;</a>
+                @endif
+
+                @for ($pagina = 1; $pagina <= $klanten->lastPage(); $pagina++)
+                    @if ($pagina === $klanten->currentPage())
+                        <span class="klanten-page-link is-active">{{ $pagina }}</span>
+                    @else
+                        <a class="klanten-page-link" href="{{ $klanten->url($pagina) }}">{{ $pagina }}</a>
+                    @endif
+                @endfor
+
+                @if ($klanten->hasMorePages())
+                    <a class="klanten-page-link" href="{{ $klanten->nextPageUrl() }}" aria-label="Volgende pagina">&rsaquo;</a>
+                @else
+                    <span class="klanten-page-link is-disabled">&rsaquo;</span>
+                @endif
+            </nav>
+        @endif
 
         <div class="klanten-table-wrap">
             <table class="klanten-table">

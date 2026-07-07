@@ -105,9 +105,35 @@
                     @endforeach
                 </div>
             @else
-                <p style="max-width: 680px; margin: 0; color: #8a8f96; font-size: 17px; line-height: 1.5;">
-                    Je bent ingelogd. Alleen de eigenaar kan de onderdelen Klanten, Medewerkers, Behandelingen en Producten openen.
+                <p style="max-width: 680px; margin: 0 0 24px; color: #8a8f96; font-size: 17px; line-height: 1.5;">
+                    Welkom bij Kniploket Tiko - hier kunt u uw gemaakte afspraken bekijken, wijzigen of een nieuwe afspraak inplannen.
                 </p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+                    <article style="
+                        min-height: 142px;
+                        padding: 17px 14px;
+                        border-radius: 8px;
+                        background: #fff;
+                        box-shadow: 0 16px 28px rgb(25 30 40 / 0.08);
+                    ">
+                        <h2 style="margin: 0 0 8px; font-size: 19px; line-height: 1.2;">Mijn afspraken</h2>
+                        <p style="min-height: 42px; margin: 0 0 16px; color: #737982; font-size: 15px; line-height: 1.45;">Bekijk, wijzig of plan uw afspraken.</p>
+                        <a href="{{ route('afspraken.index') }}" style="
+                            display: inline-flex;
+                            min-height: 29px;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 0 10px;
+                            border: 1px solid #3383b9;
+                            border-radius: 6px;
+                            color: #1c78b2;
+                            font-size: 13px;
+                            font-weight: 700;
+                            text-decoration: none;
+                        ">Openen</a>
+                    </article>
+                </div>
             @endif
         @endguest
     </section>

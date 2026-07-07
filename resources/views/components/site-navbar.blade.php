@@ -505,6 +505,10 @@
                     <a href="{{ route('behandelingen.index') }}">Behandelingen</a>
                     <a href="{{ route('producten.index') }}">Producten</a>
                 @endif
+                
+                @if (auth()->user()->role === 'klant')
+                    <a href="{{ route('afspraken.index') }}">Mijn afspraken</a>
+                @endif
 
                 <span class="site-navbar__user">{{ auth()->user()->name }} ({{ auth()->user()->role }})</span>
                 <a class="site-navbar__button" href="{{ route('logout') }}">Uitloggen</a>
