@@ -179,37 +179,6 @@
         text-align: center;
     }
 
-    .klanten-pagination {
-        display: flex;
-        justify-content: center;
-        gap: 6px;
-        margin: 14px 0 4px;
-    }
-
-    .klanten-pagination a,
-    .klanten-pagination span {
-        display: inline-grid;
-        min-width: 30px;
-        height: 30px;
-        place-items: center;
-        border: 1px solid #dde5ef;
-        border-radius: 7px;
-        color: #d40a2f;
-        font-size: 13px;
-        font-weight: 700;
-        text-decoration: none;
-    }
-
-    .klanten-pagination .is-active {
-        border-color: #d40a2f;
-        background: #d40a2f;
-        color: #fff;
-    }
-
-    .klanten-pagination .is-disabled {
-        color: #cbd3dd;
-    }
-
     @media (max-width: 760px) {
         .klanten-filter__form {
             display: block;
@@ -248,7 +217,9 @@
     </div>
 
     <section class="klanten-filter" aria-label="Klanten filteren">
-        <form class="klanten-filter__form" method="GET" action="{{ route('klanten.index') }}">
+        <form class="klanten-filter__form" method="POST" action="{{ route('klanten.index') }}">
+            @csrf
+
             <label for="postcode">Postcode zoeken</label>
             <div class="klanten-filter__controls">
                 <input
@@ -283,7 +254,7 @@
     @endif
 
     <section class="klanten-overzicht" aria-label="Overzicht klanten met contactgegevens">
-        <p class="klanten-count">Gevonden klanten - {{ $klanten->total() }} klant(en)</p>
+        <p class="klanten-count">Gevonden klanten - {{ $klanten->count() }} klant(en)</p>
 
         <div class="klanten-table-wrap">
             <table class="klanten-table">
@@ -325,30 +296,6 @@
                 </tbody>
             </table>
         </div>
-
-        @if ($klanten->hasPages())
-            <nav class="klanten-pagination" aria-label="Paginering klanten">
-                @if ($klanten->onFirstPage())
-                    <span class="is-disabled">&lsaquo;</span>
-                @else
-                    <a href="{{ $klanten->previousPageUrl() }}" aria-label="Vorige pagina">&lsaquo;</a>
-                @endif
-
-                @for ($pagina = 1; $pagina <= $klanten->lastPage(); $pagina++)
-                    @if ($pagina === $klanten->currentPage())
-                        <span class="is-active">{{ $pagina }}</span>
-                    @else
-                        <a href="{{ $klanten->url($pagina) }}">{{ $pagina }}</a>
-                    @endif
-                @endfor
-
-                @if ($klanten->hasMorePages())
-                    <a href="{{ $klanten->nextPageUrl() }}" aria-label="Volgende pagina">&rsaquo;</a>
-                @else
-                    <span class="is-disabled">&rsaquo;</span>
-                @endif
-            </nav>
-        @endif
     </section>
 </main>
 

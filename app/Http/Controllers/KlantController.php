@@ -7,9 +7,7 @@ use App\Http\Requests\KlantZoekRequest;
 use App\Models\Klant;
 use App\Models\TechnicalLog;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -20,7 +18,7 @@ class KlantController extends Controller
         $postcode = $request->postcode();
 
         try {
-            $klantenCollectie = Klant::zoekMetContactgegevens($postcode);
+            $klanten = Klant::zoekMetContactgegevens($postcode);
         } catch (Throwable $exception) {
             $this->logTechnischeFout($exception, 'Klantenoverzicht ophalen', [
                 'postcode' => $postcode,
@@ -34,18 +32,16 @@ class KlantController extends Controller
         $melding = null;
 
         if ($postcode !== null) {
-            $melding = $klantenCollectie->isEmpty()
+            $melding = $klanten->isEmpty()
                 ? 'Er zijn geen klanten bekent die de geselecteerde postcode hebben'
                 : 'Klanten gefilterd op postcode '.$postcode.'.';
         }
 
         Log::channel('klanten')->info('Klantenoverzicht geopend.', [
             'postcode' => $postcode,
-            'aantal_klanten' => $klantenCollectie->count(),
+            'aantal_klanten' => $klanten->count(),
             'gebruiker_id' => $request->user()?->id,
         ]);
-
-        $klanten = $this->pagineerKlanten($klantenCollectie, $postcode);
 
         return view('klanten.index', [
             'klanten' => $klanten,
@@ -188,23 +184,5 @@ class KlantController extends Controller
 
         Log::channel('klanten')->error('Klantactie mislukt.', $context);
         Log::error('Klantgegevens ophalen mislukt.', $context);
-    }
-
-    private function pagineerKlanten(Collection $klanten, ?string $postcode): LengthAwarePaginator
-    {
-        $perPagina = 4;
-        $huidigePagina = LengthAwarePaginator::resolveCurrentPage();
-        $items = $klanten->slice(($huidigePagina - 1) * $perPagina, $perPagina)->values();
-
-        return new LengthAwarePaginator(
-            $items,
-            $klanten->count(),
-            $perPagina,
-            $huidigePagina,
-            [
-                'path' => LengthAwarePaginator::resolveCurrentPath(),
-                'query' => $postcode === null ? [] : ['postcode' => $postcode],
-            ],
-        );
     }
 }
