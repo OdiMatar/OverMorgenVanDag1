@@ -365,6 +365,10 @@
         border-bottom: 1px solid #e5e9ef;
     }
 
+    .product-detail-list div:last-child {
+        border-bottom: 0;
+    }
+
     .product-detail-list dt,
     .product-detail-list dd {
         margin: 0;
