@@ -225,11 +225,11 @@
                 <thead>
                     <tr>
                         <th>Product</th>
-                        <th>Merk</th>
                         <th>Categorie</th>
+                        <th>Merk</th>
                         <th>EAN-code</th>
-                        <th>Aantal op voorraad</th>
                         <th>Verkoopprijs</th>
+                        <th>Voorraad</th>
                         <th>Actie</th>
                     </tr>
                 </thead>
@@ -237,11 +237,11 @@
                     @forelse ($producten as $product)
                         <tr>
                             <td>{{ $product->Naam }}</td>
-                            <td>{{ $product->Merk }}</td>
                             <td>{{ $product->CategorieNaam }}</td>
+                            <td>{{ $product->Merk }}</td>
                             <td>{{ $product->EANcode }}</td>
-                            <td>{{ $product->AantalOpVoorraad ?? 0 }}</td>
                             <td>EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}</td>
+                            <td>{{ $product->AantalOpVoorraad ?? 0 }}</td>
                             <td>
                                 <a class="producten-btn producten-btn--outline" href="{{ route('producten.show', $product->Id) }}">Details</a>
                             </td>
