@@ -248,7 +248,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7">Er zijn geen producten gevonden</td>
+                            <td colspan="7">Er zijn geen producten beschikbaar.</td>
                         </tr>
                     @endforelse
                 </tbody>
