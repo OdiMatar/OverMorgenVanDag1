@@ -219,7 +219,7 @@
                     <label>Huidige verkoopprijs <input type="text" value="EUR {{ number_format((float) $product->VerkoopPrijs, 2, ',', '.') }}" disabled></label>
                     <label>Plaats leverancier <input type="text" value="{{ $product->LeverancierPlaats ?? '-' }}" disabled></label>
                     <label>
-                        Nieuwe verkoopprijs <span>*</span>
+                        <span class="product-field-label">Nieuwe verkoopprijs <span>*</span></span>
                         <div class="product-input-with-status">
                             <input
                                 @class(['is-invalid' => isset($errors) && $errors->has('nieuwe_verkoopprijs')])

@@ -406,6 +406,14 @@
         color: #d40a2f;
     }
 
+    .product-form-grid .product-field-label {
+        color: #263244;
+    }
+
+    .product-form-grid .product-field-label span {
+        color: #d40a2f;
+    }
+
     .product-form-grid input {
         width: 100%;
         min-height: 32px;
