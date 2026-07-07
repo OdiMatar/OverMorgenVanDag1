@@ -271,7 +271,7 @@
 
     .behandelingen-empty-message {
         height: 46px;
-        color: #202b3f;
+        color: #6f7886;
         text-align: center !important;
     }
 
