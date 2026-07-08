@@ -12,6 +12,7 @@ class ProductController extends Controller
 {
     public function index(Request $request): View
     {
+        // Leeg of ongeldig betekent: toon alle categorieen.
         $categorieId = $request->integer('categorie_id') ?: null;
 
         return view('producten.index', [
@@ -41,6 +42,7 @@ class ProductController extends Controller
         $huidigeDatum = Carbon::parse($product->Houdbaarheidsdatum)->startOfDay();
         $nieuweDatumWaarde = $request->input('houdbaarheidsdatum');
 
+        // Een nieuwe houdbaarheidsdatum is verplicht voordat we kunnen vergelijken.
         if (! $nieuweDatumWaarde) {
             return back()
                 ->withInput()
@@ -50,6 +52,7 @@ class ProductController extends Controller
 
         $nieuweDatum = Carbon::parse($nieuweDatumWaarde)->startOfDay();
 
+        // De datum mag niet teruggezet worden.
         if ($nieuweDatum->lt($huidigeDatum)) {
             return back()
                 ->withInput()
@@ -57,6 +60,7 @@ class ProductController extends Controller
                 ->withErrors(['houdbaarheidsdatum' => 'De houdbaarheidsdatum mag niet eerder zijn dan de huidige houdbaarheidsdatum.']);
         }
 
+        // De opdrachtregel: verlengen mag maximaal 7 dagen.
         if ($nieuweDatum->gt($huidigeDatum->copy()->addDays(7))) {
             return back()
                 ->withInput()
@@ -73,6 +77,7 @@ class ProductController extends Controller
 
     private function productOfFail(int $id): object
     {
+        // Product::detail gebruikt de detailquery met categorie, voorraad en leverancier.
         abort_unless($product = Product::detail($id), 404);
 
         return $product;

@@ -22,6 +22,7 @@ class Product extends Model
 
     public static function overzicht(?int $categorieId = null): LengthAwarePaginator
     {
+        // De stored procedure geeft alle rijen terug; daarom pagineren we hier handmatig.
         $producten = collect(static::productenOverzichtData($categorieId));
         $page = LengthAwarePaginator::resolveCurrentPage();
         $perPage = 4;
@@ -41,8 +42,10 @@ class Product extends Model
     public static function detail(int $id): ?object
     {
         try {
+            // Voorkeursroute: gebruik de stored procedure uit database/stored-procedures.
             return collect(DB::select('CALL sp_product_detail(?)', [$id]))->first();
         } catch (\Exception) {
+            // Fallback voor omgevingen waar de stored procedure nog niet bestaat.
             return DB::table('Product')
                 ->join('Categorie', 'Product.CategorieId', '=', 'Categorie.Id')
                 ->leftJoin('Voorraad', 'Product.Id', '=', 'Voorraad.ProductId')
@@ -75,8 +78,10 @@ class Product extends Model
     public static function categorieen(): Collection
     {
         try {
+            // Haal alleen actieve categorieen op voor het filter.
             return collect(DB::select('CALL sp_product_categorieen()'));
         } catch (\Exception) {
+            // Fallback voor omgevingen zonder stored procedure.
             return DB::table('Categorie')
                 ->select('Id', 'Naam')
                 ->whereRaw("IsActief = b'1'")
@@ -88,8 +93,10 @@ class Product extends Model
     public static function wijzigHoudbaarheidsdatum(int $id, string $datum): void
     {
         try {
+            // Laat de database de update uitvoeren als de procedure beschikbaar is.
             DB::statement('CALL sp_product_houdbaarheidsdatum_bijwerken(?, ?)', [$id, $datum]);
         } catch (\Exception) {
+            // Fallback: werk dezelfde velden rechtstreeks bij.
             DB::table('Product')
                 ->where('Id', $id)
                 ->update([
@@ -102,8 +109,10 @@ class Product extends Model
     private static function productenOverzichtData(?int $categorieId): array
     {
         try {
+            // De procedure past het categoriefilter toe wanneer categorieId is ingevuld.
             return DB::select('CALL sp_producten_overzicht(?)', [$categorieId]);
         } catch (\Exception) {
+            // Fallback-query voor het productoverzicht met categorie en voorraad.
             return DB::table('Product')
                 ->join('Categorie', 'Product.CategorieId', '=', 'Categorie.Id')
                 ->leftJoin('Voorraad', 'Product.Id', '=', 'Voorraad.ProductId')
