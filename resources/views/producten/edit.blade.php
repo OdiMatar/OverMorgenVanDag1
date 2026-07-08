@@ -1,6 +1,7 @@
 @include('components.site-navbar')
 
 @php
+    // De date-input gebruikt Y-m-d; gewone tekst gebruikt d-m-Y.
     $datum = fn ($waarde) => $waarde ? \Carbon\Carbon::parse($waarde)->format('Y-m-d') : '';
     $datumNl = fn ($waarde) => $waarde ? \Carbon\Carbon::parse($waarde)->format('d-m-Y') : '-';
     $geld = fn ($waarde) => $waarde === null ? '-' : 'EUR '.number_format((float) $waarde, 2, ',', '.');
@@ -46,6 +47,7 @@
 
     <h1 class="product-title">Product wijzigen <span>{{ $product->Naam }}</span></h1>
 
+    {{-- Alleen de houdbaarheidsdatum is aanpasbaar; de rest is context voor de gebruiker. --}}
     <section class="product-form-card">
         <form method="POST" action="{{ route('producten.update', $product->Id) }}">
             @csrf

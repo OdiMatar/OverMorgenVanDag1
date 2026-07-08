@@ -174,6 +174,7 @@
 
     <h1 class="producten-title">Overzicht producten</h1>
 
+    {{-- Filter de lijst op categorie. Zonder keuze worden alle producten getoond. --}}
     <section class="producten-filter-card" aria-label="Producten filteren">
         <form class="producten-filter-form" method="GET" action="{{ route('producten.index') }}">
             <label for="categorie_id">
@@ -196,6 +197,7 @@
     <section class="producten-card">
         <p class="producten-count">Gevonden producten - {{ $producten->total() }} product(en)</p>
 
+        {{-- Handmatige paginering, omdat Product::overzicht een eigen paginator maakt. --}}
         @if ($producten->hasPages())
             <div class="producten-pagination">
                 @if ($producten->onFirstPage())
@@ -220,6 +222,7 @@
             </div>
         @endif
 
+        {{-- Productoverzicht met de belangrijkste gegevens en een link naar detail. --}}
         <div class="producten-table-wrap">
             <table class="producten-table">
                 <thead>

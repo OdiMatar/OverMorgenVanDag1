@@ -1,6 +1,7 @@
 @include('components.site-navbar')
 
 @php
+    // Kleine weergavehelpers voor lege waarden, geldbedragen en datums.
     $leeg = fn ($waarde) => filled($waarde) ? $waarde : '-';
     $geld = fn ($waarde) => $waarde === null ? '-' : 'EUR '.number_format((float) $waarde, 2, ',', '.');
     $datum = fn ($waarde) => $waarde ? \Carbon\Carbon::parse($waarde)->format('d-m-Y') : '-';
@@ -44,6 +45,7 @@
 
     <h1 class="product-title">Productdetail <span>{{ $product->Naam }}</span></h1>
 
+    {{-- Toon alle productdetails als label-waarde regels. --}}
     <section class="product-card">
         @foreach ([
             'Product' => $product->Naam,
